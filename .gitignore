@@ -1,0 +1,8 @@
+CMakeCache.txt
+CMakeFiles
+_deps
+extern/expected
+Makefile
+cmake_install.cmake
+CPackConfig.cmake
+CPackSourceConfig.cmake
