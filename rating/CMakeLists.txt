@@ -13,4 +13,4 @@ add_executable(rating
     controller/controller.cpp
 )
 
-target_link_libraries(rating PRIVATE cpprestsdk::cpprest ${OPENSSL_LIBRARIES} expected)
+target_link_libraries(rating PRIVATE cpprestsdk::cpprest ${OPENSSL_LIBRARIES} tl::expected)

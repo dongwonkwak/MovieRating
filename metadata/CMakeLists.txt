@@ -12,4 +12,4 @@ add_executable(metadata
     service/metadataservice.cpp
 )
 
-target_link_libraries(metadata PRIVATE cpprestsdk::cpprest ${OPENSSL_LIBRARIES} expected)
+target_link_libraries(metadata PRIVATE cpprestsdk::cpprest ${OPENSSL_LIBRARIES} tl::expected)

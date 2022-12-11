@@ -6,3 +6,4 @@ Makefile
 cmake_install.cmake
 CPackConfig.cmake
 CPackSourceConfig.cmake
+build

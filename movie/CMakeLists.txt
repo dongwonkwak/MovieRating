@@ -15,4 +15,4 @@ add_executable(movie
 )
 
 target_include_directories(movie PRIVATE ../metadata)
-target_link_libraries(movie PRIVATE cpprestsdk::cpprest ${OPENSSL_LIBRARIES} expected)
+target_link_libraries(movie PRIVATE cpprestsdk::cpprest ${OPENSSL_LIBRARIES} tl::expected)
