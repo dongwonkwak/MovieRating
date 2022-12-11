@@ -5,6 +5,7 @@
     "dependencies": [
         "ppconsul",
         "cpprestsdk",
-        "tl-expected"
+        "tl-expected",
+        "rapidcsv"
     ]
 }

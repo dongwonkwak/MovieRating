@@ -1,6 +1,6 @@
 #pragma once
 
-#include "extern/expected/include/tl/expected.hpp"
+#include <tl/expected.hpp>
 #include <string>
 
 namespace common

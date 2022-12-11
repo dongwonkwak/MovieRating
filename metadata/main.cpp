@@ -4,7 +4,7 @@
 #include "service/metadataservice.h"
 using namespace metadata;
 
-#include "common/rapidcsv.h"
+#include <rapidcsv.h>
 
 int main(int argc, char* argv[])
 {
