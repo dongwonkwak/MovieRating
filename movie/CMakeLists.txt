@@ -3,7 +3,7 @@ project(movie)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(../)
-#target_include_directories(movie PRIVATE ../metadata)
+
 add_executable(movie 
     main.cpp
     service/movieservice.cpp
@@ -14,4 +14,8 @@ add_executable(movie
 )
 
 target_include_directories(movie PRIVATE ../metadata)
-target_link_libraries(movie PRIVATE cpprestsdk::cpprest ${OPENSSL_LIBRARIES} common)
+target_link_libraries(movie PRIVATE 
+    cpprestsdk::cpprest 
+    ${OPENSSL_LIBRARIES} 
+    discovery
+    common)

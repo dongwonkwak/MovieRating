@@ -1,9 +1,3 @@
-CMakeCache.txt
-CMakeFiles
-_deps
-extern/expected
-Makefile
-cmake_install.cmake
-CPackConfig.cmake
-CPackSourceConfig.cmake
+cmake-build-debug
 build
+.vscode/settings.json

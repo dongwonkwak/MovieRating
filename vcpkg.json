@@ -6,6 +6,9 @@
         "ppconsul",
         "cpprestsdk",
         "tl-expected",
-        "rapidcsv"
+        "rapidcsv",
+        "josuttis-jthread",
+        "fmt",
+        "range-v3"
     ]
 }

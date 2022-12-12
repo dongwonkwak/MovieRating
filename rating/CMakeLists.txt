@@ -15,4 +15,5 @@ add_executable(rating
 target_link_libraries(rating PRIVATE 
     cpprestsdk::cpprest 
     ${OPENSSL_LIBRARIES} 
+    discovery
     common)

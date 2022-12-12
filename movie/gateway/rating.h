@@ -1,6 +1,7 @@
 #pragma once
 
 #include "movie/controller/controller.h"
+#include "discovery/registry.h"
 
 #include <cpprest/http_client.h>
 #include <cpprest/uri.h>
@@ -12,7 +13,7 @@ namespace movie
     class RatingGateway : public IRatingGateway
     {
     public:
-        RatingGateway(utility::string_t url);
+        RatingGateway(std::shared_ptr<discovery::Registry> registry) noexcept;
         common::expected<double> GetAggretatedRating(
                         const std::string& recordID, 
                         const std::string& recordType) override;
@@ -21,6 +22,6 @@ namespace movie
                     const std::string& recordType, 
                     const rating::Rating& rating) override;
     private:
-        http_client client_;
+        std::shared_ptr<discovery::Registry> registry_;
     };
 }

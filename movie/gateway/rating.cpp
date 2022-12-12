@@ -4,8 +4,8 @@ using namespace web::http;
 
 namespace movie
 {
-    RatingGateway::RatingGateway(utility::string_t url)
-        : client_(http::uri_builder(url).append_path(U("/rating")).to_uri())
+    RatingGateway::RatingGateway(std::shared_ptr<discovery::Registry> registry) noexcept
+        : registry_(registry)
     {
 
     }
@@ -14,18 +14,29 @@ namespace movie
                         const std::string& recordID, 
                         const std::string& recordType)
     {
-        utility::ostringstream_t buf;
-        buf << U("?id=") << recordID << U("&type=") << recordType;
-        auto response = client_.request(methods::GET, buf.str()).get();
-        ucout << response.to_string() << std::endl;
-
-        if (response.to_string().empty())
+        auto addrs = registry_->ServiceAddress("rating");
+        for (const auto& addr : addrs.value())
         {
-            return common::unexpected{"response is empty"};
+            std::cout << addr << std::endl;
+        }
+        if (addrs->empty())
+        {
+            return common::unexpected{"can't find service"};
         }
 
-        double result = stod(response.to_string());
-        return result;
+        http_client client(http::uri_builder(addrs.value()[0]).append(U("/rating")).to_uri());
+        utility::ostringstream_t buf;
+        buf << U("?id=") << recordID << U("&type=") << recordType;
+
+        auto ret = client.request(methods::GET, buf.str())
+                .then([](http_response resp) { return resp.extract_string(); })
+                .then([](std::string body) {
+                    double result = stod(body);
+                    std::cout << "!! result: " << result << std::endl;
+                    return result;
+                });
+                
+        return ret.get();
     }
 
     void RatingGateway::PutRating(
@@ -33,11 +44,24 @@ namespace movie
                     const std::string& recordType, 
                     const rating::Rating& rating)
     {
+        auto addrs = registry_->ServiceAddress("rating");
+        for (const auto& addr : addrs.value())
+        {
+            std::cout << addr << std::endl;
+        }
+        if (addrs->empty())
+        {
+            return;
+            //return common::unexpected{"can't find service"};
+        }
+
+        http_client client(http::uri_builder(addrs.value()[0]).append(U("/rating")).to_uri());
+
         utility::ostringstream_t buf;
         buf << U("?id=") << recordID << U("&type=") << recordType
             << U("&userId=") << rating.userId
             << U("&value=") << rating.ratingValue;
-        
-        auto response = client_.request(methods::PUT, buf.str()).get();
+        client.request(methods::PUT, buf.str()).get();
+        //auto response = client_.request(methods::PUT, buf.str()).get();
     }
 }

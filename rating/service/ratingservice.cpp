@@ -16,7 +16,7 @@ namespace rating
     void RatingService::handle_get(http_request message)
     {
         std::map<utility::string_t, utility::string_t> query =
-            uri::split_query(uri::decode(message.request_uri().query()));
+            uri::split_query(uri::decode(message.relative_uri().query()));
         auto found_id = query.find("id");
         auto found_type = query.find("type");
         if (found_id == query.end() || found_type == query.end())
@@ -26,6 +26,12 @@ namespace rating
         }
 
         auto v = controller_->Get(found_id->second, found_type->second);
+        if (!v.has_value())
+        {
+            message.reply(status_codes::OK, "0");
+            return;
+        }
+        
         double sum = 0.0;
         for (const auto& e : v.value())
         {
