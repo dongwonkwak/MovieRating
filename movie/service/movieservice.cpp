@@ -1,9 +1,9 @@
 #include "movie/service/movieservice.h"
 #include "movie/controller/controller.h"
 
-namespace movie
+namespace movie::service
 {
-    MovieService::MovieService(std::unique_ptr<Controller>&& controller, utility::string_t url)
+    MovieService::MovieService(std::unique_ptr<movie::controller::Controller> controller, utility::string_t url)
         : listener_(url)
         , controller_(std::move(controller))
     {

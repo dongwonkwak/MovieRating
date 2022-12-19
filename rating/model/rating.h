@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace rating
+namespace rating::model
 {
     struct Rating
     {
@@ -60,6 +60,9 @@ namespace rating
     };
 
     constexpr std::string_view RecordTypeMovie = "movie";
+
+    constexpr std::string_view RatingEventTypePut = "put";
+    constexpr std::string_view RatingEventTypeDelete = "delete";
 
     web::json::value AsJSON(const common::expected<std::vector<common::expected<Rating>>>& rating);
 }

@@ -1,6 +1,6 @@
 #include "rating/model/rating.h"
 
-namespace rating
+namespace rating::model
 {
     web::json::value AsJSON(const common::expected<std::vector<common::expected<Rating>>>& rating)
     {

@@ -6,19 +6,23 @@
 #include <memory>
 #include <vector>
 
-namespace rating
+namespace rating::repository
 {
     class Repository;
+}
 
+namespace rating::controller
+{
     class Controller
     {
         using RecordID = std::string;
         using RecordType = std::string;
     public:
-        explicit Controller(std::unique_ptr<Repository>&& repository);
-        common::expected<std::vector<common::expected<Rating>>> Get(const RecordID& recordID, const RecordType& recordType);
-        void Put(const RecordID& recordId, const RecordType& recordType, const Rating& rating);
+        explicit Controller(std::unique_ptr<rating::repository::Repository> repository);
+        auto Get(const RecordID& recordID, const RecordType& recordType)
+            -> common::expected<std::vector<common::expected<model::Rating>>>;
+        void Put(const RecordID& recordId, const RecordType& recordType, const model::Rating& rating);
     private:
-        std::unique_ptr<Repository> repository_;
+        std::unique_ptr<rating::repository::Repository> repository_;
     };
 }

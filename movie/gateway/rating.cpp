@@ -2,7 +2,7 @@
 
 using namespace web::http;
 
-namespace movie
+namespace movie::gateway
 {
     RatingGateway::RatingGateway(std::shared_ptr<discovery::Registry> registry) noexcept
         : registry_(registry)
@@ -10,9 +10,10 @@ namespace movie
 
     }
 
-    common::expected<double> RatingGateway::GetAggretatedRating(
+    auto RatingGateway::GetAggretatedRating(
                         const std::string& recordID, 
                         const std::string& recordType)
+        -> common::expected<double>
     {
         auto addrs = registry_->ServiceAddress("rating");
         for (const auto& addr : addrs.value())
@@ -42,7 +43,7 @@ namespace movie
     void RatingGateway::PutRating(
                     const std::string& recordID, 
                     const std::string& recordType, 
-                    const rating::Rating& rating)
+                    const rating::model::Rating& rating)
     {
         auto addrs = registry_->ServiceAddress("rating");
         for (const auto& addr : addrs.value())

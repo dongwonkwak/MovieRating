@@ -36,13 +36,13 @@ int main(int argc, char* argv[])
     });
 
     // create meta gateway
-    auto metadataGateway = std::make_unique<MetadataGateway>(registry);
-    auto ratingGateway = std::make_unique<RatingGateway>(registry);
-    auto controller = std::make_unique<Controller>(
+    auto metadataGateway = std::make_unique<gateway::MetadataGateway>(registry);
+    auto ratingGateway = std::make_unique<gateway::RatingGateway>(registry);
+    auto controller = std::make_unique<controller::Controller>(
         std::move(ratingGateway),
         std::move(metadataGateway));
     const string_t addr = "http://localhost:8083/movie";
-    auto service = std::make_unique<MovieService>(std::move(controller), addr);
+    auto service = std::make_unique<service::MovieService>(std::move(controller), addr);
 
     ucout << utility::string_t(U("Movie Service Listening for requests at: ")) << addr << std::endl;
     service->start().wait();

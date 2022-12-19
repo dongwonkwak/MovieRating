@@ -1,11 +1,12 @@
 #include "repository/memory.h"
 
-namespace rating
+namespace rating::repository
 {
 
-    common::expected<std::vector<common::expected<Rating>>> Repository::Get(const RecordID& recordID, const RecordType& recordType)
+    auto Repository::Get(const RecordID& recordID, const RecordType& recordType)
+        -> common::expected<std::vector<common::expected<model::Rating>>>
     {
-        std::vector<common::expected<Rating>> res;
+        std::vector<common::expected<model::Rating>> res;
 
         auto found1 = repository_.find(recordID);
         if (found1 == repository_.end())
@@ -26,7 +27,7 @@ namespace rating
         return res;
     }
 
-    void Repository::Put(const RecordID& recordId, const RecordType& recordType, const Rating& rating)
+    void Repository::Put(const RecordID& recordId, const RecordType& recordType, const model::Rating& rating)
     {
         repository_[recordId][recordType].push_back(rating);
     }

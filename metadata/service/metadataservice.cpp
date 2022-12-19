@@ -4,9 +4,9 @@
 
 #include <iostream>
 
-namespace metadata
+namespace metadata::service
 {
-    MetadataService::MetadataService(std::unique_ptr<Controller>&& controller, utility::string_t url)
+    MetadataService::MetadataService(std::unique_ptr<metadata::controller::Controller> controller, utility::string_t url)
         : controller_(std::move(controller))
         , listener_(url)
     {

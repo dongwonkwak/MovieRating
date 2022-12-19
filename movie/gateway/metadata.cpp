@@ -2,7 +2,7 @@
 #include "discovery/consul.h"
 using namespace web::http;
 
-namespace movie
+namespace movie::gateway
 {
     MetadataGateway::MetadataGateway(std::shared_ptr<discovery::Registry> registry) noexcept
        : registry_(registry)
@@ -28,7 +28,7 @@ namespace movie
     }
 
     auto MetadataGateway::Get(const std::string& id) 
-        -> common::expected<metadata::Metadata>
+        -> common::expected<metadata::model::Metadata>
     {
         auto addrs = registry_->ServiceAddress("metadata");
         for (const auto& addr : addrs.value())
@@ -50,7 +50,7 @@ namespace movie
             return common::unexpected{"response is empty"};
         }
 
-        return metadata::Metadata::FromJSON(response.extract_json().get());
+        return metadata::model::Metadata::FromJSON(response.extract_json().get());
 
     }
 }

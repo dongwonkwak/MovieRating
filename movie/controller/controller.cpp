@@ -1,17 +1,17 @@
 #include "movie/controller/controller.h"
 
-namespace movie
+namespace movie::controller
 {
     Controller::Controller(
-        std::unique_ptr<IRatingGateway>&& ratingGateway, 
-        std::unique_ptr<IMetadataGateway>&& metadataGateway)
+        std::unique_ptr<gateway::IRatingGateway> ratingGateway, 
+        std::unique_ptr<gateway::IMetadataGateway> metadataGateway)
         : ratingGateway_(std::move(ratingGateway))
         , metadataGateway_(std::move(metadataGateway))
     {
 
     }
 
-    auto Controller::Get(const std::string& id) -> common::expected<MovieDetails>
+    auto Controller::Get(const std::string& id) -> common::expected<model::MovieDetails>
     {
         auto metadata = metadataGateway_->Get(id);
         if (!metadata.has_value())
@@ -20,12 +20,12 @@ namespace movie
         }
         //auto details
 
-        auto rating = ratingGateway_->GetAggretatedRating(id, rating::RecordTypeMovie.data());
+        auto rating = ratingGateway_->GetAggretatedRating(id, rating::model::RecordTypeMovie.data());
         if (!rating.has_value())
         {
             return common::unexpected{"can't find rating"};
         }
-        MovieDetails details;
+        model::MovieDetails details;
         details.metadata = metadata.value();
         details.rating = rating.value();
 

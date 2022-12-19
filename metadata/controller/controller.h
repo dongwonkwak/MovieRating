@@ -4,16 +4,19 @@
 #include "model/metadata.h"
 #include "common/expected.h"
 
-namespace metadata
+namespace metadata::repository
 {
     class Repository;
+}
 
+namespace metadata::controller
+{    
     class Controller
     {
     public:
-        explicit Controller(std::unique_ptr<Repository>&& repository);
-        common::expected<Metadata> Get(std::string_view id);
+        explicit Controller(std::unique_ptr<metadata::repository::Repository> repository);
+        common::expected<model::Metadata> Get(std::string_view id);
     private:
-        std::unique_ptr<Repository> repository_;
+        std::unique_ptr<metadata::repository::Repository> repository_;
     };
 }

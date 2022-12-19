@@ -9,14 +9,16 @@ using namespace web::http::experimental::listener;
 
 #include <memory>
 
-namespace metadata
+namespace metadata::controller
 {
     class Controller;
-
+}
+namespace metadata::service
+{
     class MetadataService
     {
     public:
-        MetadataService(std::unique_ptr<Controller>&& controller, utility::string_t url);
+        MetadataService(std::unique_ptr<controller::Controller> controller, utility::string_t url);
         pplx::task<void> start() { return listener_.open(); }
         pplx::task<void> stop() { return listener_.close(); }
     private:
@@ -24,6 +26,6 @@ namespace metadata
         void handle_put(http_request message);
     private:
         http_listener listener_;
-        std::unique_ptr<Controller> controller_;
+        std::unique_ptr<metadata::controller::Controller> controller_;
     };
 }

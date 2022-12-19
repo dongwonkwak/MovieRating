@@ -9,15 +9,16 @@ using namespace web::http::experimental::listener;
 
 #include <memory>
 
-namespace rating
+namespace rating::controller
 {
     class Controller;
-
-
+}
+namespace rating::service
+{
     class RatingService
     {
     public:
-        RatingService(std::unique_ptr<Controller>&& controller, utility::string_t url);
+        RatingService(std::unique_ptr<rating::controller::Controller> controller, utility::string_t url);
         pplx::task<void> start() { return listener_.open(); }
         pplx::task<void> stop() { return listener_.close(); }
     private:
@@ -25,6 +26,6 @@ namespace rating
         void handle_put(http_request message);
     private:
         http_listener listener_;
-        std::unique_ptr<Controller> controller_;
+        std::unique_ptr<rating::controller::Controller> controller_;
     };
 }

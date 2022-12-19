@@ -1,6 +1,6 @@
 #pragma once
 
-#include "movie/controller/controller.h"
+#include "movie/gateway/gateway.h"
 #include "discovery/registry.h"
 
 #include <cpprest/http_client.h>
@@ -10,7 +10,7 @@ using namespace web::http::client;
 
 #include <memory>
 
-namespace movie
+namespace movie::gateway
 {
     class MetadataGateway : public IMetadataGateway
     {
@@ -18,7 +18,7 @@ namespace movie
         MetadataGateway(std::shared_ptr<discovery::Registry> registry) noexcept;
         ~MetadataGateway() noexcept;
         auto Get(const std::string& id) 
-            -> common::expected<metadata::Metadata> override;
+            -> common::expected<metadata::model::Metadata> override;
         
         MetadataGateway(MetadataGateway&& other);
         MetadataGateway& operator=(MetadataGateway&& other);

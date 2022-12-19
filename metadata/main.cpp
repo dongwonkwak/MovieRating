@@ -13,12 +13,12 @@ using namespace metadata;
 
 int main(int argc, char* argv[])
 {
-    auto repository = std::make_unique<Repository>();
+    auto repository = std::make_unique<repository::Repository>();
     rapidcsv::Document doc("./data/metadata.csv");
     auto count = doc.GetRowCount();
     for (size_t i = 0; i < count; i++)
     {
-        Metadata data;
+        model::Metadata data;
         auto row = doc.GetRow<std::string>(i);
         data.id = row[0];
         data.title = row[1];
@@ -47,9 +47,9 @@ int main(int argc, char* argv[])
     });
 
 
-    auto controller = std::make_unique<Controller>(std::move(repository));
+    auto controller = std::make_unique<controller::Controller>(std::move(repository));
     const string_t addr = "http://localhost:8081/metadata";
-    auto service = std::make_unique<MetadataService>(std::move(controller), addr);
+    auto service = std::make_unique<service::MetadataService>(std::move(controller), addr);
     ucout << utility::string_t(U("Metadata Service Listening for requests at: ")) << addr << std::endl;
     service->start().wait();
 

@@ -1,10 +1,11 @@
 #pragma once
 
 #include <cpprest/json.h>
+#include "movie.pb.h"
 
 #include <string>
 
-namespace metadata
+namespace metadata::model
 {
 
 struct Metadata
@@ -34,6 +35,14 @@ struct Metadata
         result.director = object["director"].as_string();
         return result;
     }
+
+    auto MetadataToProto() -> movie::Metadata
+    {
+        movie::Metadata result;
+        result.set_id(id);
+
+        return result;
+    } 
 };
 
 

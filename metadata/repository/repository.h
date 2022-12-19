@@ -6,15 +6,15 @@
 #include <map>
 #include <optional>
 
-namespace metadata
+namespace metadata::repository
 {
     class Repository
     {
     public:
-        common::expected<Metadata> Get(std::string_view id);
-        void Put(std::string_view id, const Metadata& data);
+        common::expected<model::Metadata> Get(std::string_view id);
+        void Put(std::string_view id, const model::Metadata& data);
     private:
-        std::map<std::string, Metadata> data_;
+        std::map<std::string, model::Metadata> data_;
     };
 
     //std::map<std::string, Metadata> data;

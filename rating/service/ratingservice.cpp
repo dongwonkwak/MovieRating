@@ -3,9 +3,9 @@
 #include "repository/memory.h"
 
 
-namespace rating
+namespace rating::service
 {
-    RatingService::RatingService(std::unique_ptr<Controller>&& controller, utility::string_t url)
+    RatingService::RatingService(std::unique_ptr<rating::controller::Controller> controller, utility::string_t url)
         : listener_(url)
         , controller_(std::move(controller))
     {
@@ -56,7 +56,7 @@ namespace rating
             message.reply(status_codes::NotFound);
             return;
         }
-        Rating result;
+        model::Rating result;
         result.recordId = found_id->second;
         result.recordType = found_type->second;
         result.userId = found_userid->second;

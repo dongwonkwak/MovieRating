@@ -1,6 +1,6 @@
 #pragma once
 
-#include "movie/controller/controller.h"
+#include "movie/gateway/gateway.h"
 #include "discovery/registry.h"
 
 #include <cpprest/http_client.h>
@@ -8,7 +8,7 @@
 using namespace web;
 using namespace web::http::client;
 
-namespace movie
+namespace movie::gateway
 {
     class RatingGateway : public IRatingGateway
     {
@@ -20,7 +20,7 @@ namespace movie
         void PutRating(
                     const std::string& recordID, 
                     const std::string& recordType, 
-                    const rating::Rating& rating) override;
+                    const rating::model::Rating& rating) override;
     private:
         std::shared_ptr<discovery::Registry> registry_;
     };

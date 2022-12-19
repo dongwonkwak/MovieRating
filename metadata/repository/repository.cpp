@@ -1,8 +1,8 @@
 #include "repository/repository.h"
 
-namespace metadata
+namespace metadata::repository
 {
-    common::expected<Metadata> Repository::Get(std::string_view id)
+    common::expected<model::Metadata> Repository::Get(std::string_view id)
     {
         if (data_.find(id.data()) == data_.end())
         {
@@ -12,7 +12,7 @@ namespace metadata
         return data_[id.data()];
     }
 
-    void Repository::Put(std::string_view id, const Metadata& data)
+    void Repository::Put(std::string_view id, const model::Metadata& data)
     {
         data_[id.data()] = data;
     }

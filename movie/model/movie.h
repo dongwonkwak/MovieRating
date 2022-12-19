@@ -4,12 +4,12 @@
 #include <cpprest/json.h>
 
 
-namespace movie
+namespace movie::model
 {
     struct MovieDetails
     {
         double rating;
-        metadata::Metadata metadata;
+        metadata::model::Metadata metadata;
 
         web::json::value AsJSON() const
         {

@@ -7,6 +7,7 @@ find_package(cpprestsdk CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(range-v3 CONFIG REQUIRED)
 
+include(api/grpc_protobuf_generate.cmake)
 
 add_subdirectory(common)
 add_subdirectory(discovery)
