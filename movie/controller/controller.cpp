@@ -11,7 +11,8 @@ namespace movie::controller
 
     }
 
-    auto Controller::Get(const std::string& id) -> common::expected<model::MovieDetails>
+    auto Controller::Get(const std::string& id) 
+        -> common::expected<movie::model::MovieDetails>
     {
         auto metadata = metadataGateway_->Get(id);
         if (!metadata.has_value())

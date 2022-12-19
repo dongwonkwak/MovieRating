@@ -13,7 +13,7 @@ namespace movie::controller
 {
     class Controller;
 }
-namespace movie::service
+namespace movie::service::http
 {
     class MovieService
     {

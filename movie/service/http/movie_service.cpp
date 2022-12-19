@@ -1,7 +1,7 @@
-#include "movie/service/movieservice.h"
+#include "movie/service/http/movie_service.h"
 #include "movie/controller/controller.h"
 
-namespace movie::service
+namespace movie::service::http
 {
     MovieService::MovieService(std::unique_ptr<movie::controller::Controller> controller, utility::string_t url)
         : listener_(url)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "movie/model/movie.h"
+#include "metadata/model/metadata.h"
 #include "rating/model/rating.h"
 
 #include <common/expected.h>
@@ -19,13 +19,13 @@ namespace movie::gateway
         virtual void PutRating(
                     const std::string& recordID, 
                     const std::string& recordType, 
-                    const rating::model::Rating& rating) = 0;
+                    const ::rating::model::Rating& rating) = 0;
     };
 
     struct IMetadataGateway
     {
         virtual ~IMetadataGateway() = default;
         virtual auto Get(const std::string& id) 
-            -> common::expected<metadata::model::Metadata> = 0;
+            -> common::expected<::metadata::model::Metadata> = 0;
     };
 }

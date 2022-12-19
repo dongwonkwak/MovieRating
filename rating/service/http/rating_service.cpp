@@ -1,19 +1,19 @@
-#include "service/ratingservice.h"
-#include "controller/controller.h"
-#include "repository/memory.h"
+#include "rating/service/http/rating_service.h"
+#include "rating/controller/controller.h"
+#include "rating/repository/memory.h"
 
 
-namespace rating::service
+namespace rating::service::http
 {
-    RatingService::RatingService(std::unique_ptr<rating::controller::Controller> controller, utility::string_t url)
+    HttpService::HttpService(std::unique_ptr<rating::controller::Controller> controller, utility::string_t url)
         : listener_(url)
         , controller_(std::move(controller))
     {
-        listener_.support(methods::GET, std::bind(&RatingService::handle_get, this, std::placeholders::_1));
-        listener_.support(methods::PUT, std::bind(&RatingService::handle_put, this, std::placeholders::_1));
+        listener_.support(methods::GET, std::bind(&HttpService::handle_get, this, std::placeholders::_1));
+        listener_.support(methods::PUT, std::bind(&HttpService::handle_put, this, std::placeholders::_1));
     }
 
-    void RatingService::handle_get(http_request message)
+    void HttpService::handle_get(http_request message)
     {
         std::map<utility::string_t, utility::string_t> query =
             uri::split_query(uri::decode(message.relative_uri().query()));
@@ -42,7 +42,7 @@ namespace rating::service
         message.reply(status_codes::OK, std::to_string(avg));
     }
 
-    void RatingService::handle_put(http_request message)
+    void HttpService::handle_put(http_request message)
     {
         std::map<utility::string_t, utility::string_t> query =
             uri::split_query(uri::decode(message.request_uri().query()));

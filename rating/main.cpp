@@ -1,12 +1,18 @@
 #include <iostream>
-#include "repository/memory.h"
-#include "controller/controller.h"
-#include "service/ratingservice.h"
+#include "rating/repository/memory.h"
+#include "rating/controller/controller.h"
+#include "rating/service/http/rating_service.h"
+#include "rating/service/grpc/rating_service.h"
 using namespace rating;
 
+#include <cppcoro/static_thread_pool.hpp>
+#include <cppcoro/on_scope_exit.hpp>
+#include <cppcoro/sync_wait.hpp>
+#include <cppcoro/task.hpp>
+#include <cppcoro/when_all.hpp>
+#include <cppcoro/schedule_on.hpp>
+
 #include <discovery/consul.h>
-#include <jthread.hpp>
-#include <condition_variable_any2.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -15,35 +21,46 @@ int main(int argc, char* argv[])
 
     auto registry = discovery::ConsulRegistry::Create();
     registry->Register(serviceId, serviceName, "8082");
-    std::mutex mutex;
-    auto t = std::jthread([&](const std::stop_token& token) {
-        bool isStart = true;
-
-        while (isStart)
-        {
-            registry->ReportHealthyState(serviceId);
-            std::unique_lock lock(mutex);
-            isStart = !std::condition_variable_any2().wait_for(
-                lock, token, std::chrono::seconds(3),
-                [&token] { return token.stop_requested();});
-            std::cout << "ping\n";
-        }
-    });
 
     auto repository = std::make_unique<repository::Repository>();
     auto controller = std::make_unique<controller::Controller>(std::move(repository));
-    const string_t addr = "http://localhost:8082/rating";
-    auto service = std::make_unique<service::RatingService>(std::move(controller), addr);
+    const string_t addr = "localhost:8082";
+    auto service = std::make_unique<service::grpc::RatingService>(std::move(controller), addr);
     ucout << utility::string_t(U("Rating Service Listening for requests at: ")) << addr << std::endl;
 
-    service->start().wait();
+    auto thread_pool = cppcoro::static_thread_pool{2};
 
-    std::string line;
-    std::getline(std::cin, line);
+    auto func = [&]() -> cppcoro::task<>
+    {
+        service->start();
+        co_return;
+    };
 
-    service->stop().then([&]{
-        t.request_stop();
-    }).wait();
+    auto health_check = [&]() -> cppcoro::task<>
+    {
+        co_await thread_pool.schedule();
+        registry->ReportHealthyState(serviceId);
+
+        std::this_thread::sleep_for(std::chrono::seconds(3));
+        co_return;
+    };
+
+    cppcoro::sync_wait(cppcoro::when_all(
+        [&]() -> cppcoro::task<>
+        {
+            auto stopOnExit = cppcoro::on_scope_exit([&] { registry->Deregister(serviceId); });
+            while (true)
+            {
+                co_await cppcoro::schedule_on(thread_pool, health_check());
+                std::cout << "ping\n";
+            }
+        }(),
+        [&]() -> cppcoro::task<>
+        {
+            auto stopOnExit = cppcoro::on_scope_exit([&] { service->stop(); });
+            co_await func();
+        }()
+    ));
 
     return 0;
 }

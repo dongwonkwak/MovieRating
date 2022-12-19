@@ -1,10 +1,10 @@
-#include "service/metadataservice.h"
-#include "controller/controller.h"
-#include "repository/repository.h"
+#include "metadata/service/http/metadata_service.h"
+#include "metadata/controller/controller.h"
+#include "metadata/repository/repository.h"
 
 #include <iostream>
 
-namespace metadata::service
+namespace metadata::service::http
 {
     MetadataService::MetadataService(std::unique_ptr<metadata::controller::Controller> controller, utility::string_t url)
         : controller_(std::move(controller))
