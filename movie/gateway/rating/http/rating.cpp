@@ -1,8 +1,8 @@
-#include "movie/gateway/rating.h"
+#include "movie/gateway/rating/http/rating.h"
 
 using namespace web::http;
 
-namespace movie::gateway
+namespace movie::gateway::rating::http
 {
     RatingGateway::RatingGateway(std::shared_ptr<discovery::Registry> registry) noexcept
         : registry_(registry)
@@ -25,7 +25,7 @@ namespace movie::gateway
             return common::unexpected{"can't find service"};
         }
 
-        http_client client(http::uri_builder(addrs.value()[0]).append(U("/rating")).to_uri());
+        http_client client(web::http::uri_builder(addrs.value()[0]).append(U("/rating")).to_uri());
         utility::ostringstream_t buf;
         buf << U("?id=") << recordID << U("&type=") << recordType;
 
@@ -43,7 +43,7 @@ namespace movie::gateway
     void RatingGateway::PutRating(
                     const std::string& recordID, 
                     const std::string& recordType, 
-                    const rating::model::Rating& rating)
+                    const ::rating::model::Rating& rating)
     {
         auto addrs = registry_->ServiceAddress("rating");
         for (const auto& addr : addrs.value())
@@ -56,7 +56,7 @@ namespace movie::gateway
             //return common::unexpected{"can't find service"};
         }
 
-        http_client client(http::uri_builder(addrs.value()[0]).append(U("/rating")).to_uri());
+        http_client client(web::http::uri_builder(addrs.value()[0]).append(U("/rating")).to_uri());
 
         utility::ostringstream_t buf;
         buf << U("?id=") << recordID << U("&type=") << recordType

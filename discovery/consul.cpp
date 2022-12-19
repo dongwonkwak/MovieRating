@@ -66,7 +66,7 @@ namespace discovery
             })
             | views::transform([&services](auto info) {
                 auto s = services.at(info.serviceId);
-                return fmt::format("http://{}:{}", 
+                return fmt::format("{}:{}", 
                     (s.address.empty() ? "localhost" : s.address), 
                     s.port);
             });

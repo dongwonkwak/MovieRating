@@ -8,42 +8,56 @@
 namespace metadata::model
 {
 
-struct Metadata
-{
-    std::string id;
-    std::string title;
-    std::string description;
-    std::string director;
-
-    web::json::value AsJSON() const
+    struct Metadata
     {
-        auto res = web::json::value::object();
-        res["id"] = web::json::value::string(id);
-        res["title"] = web::json::value::string(title);
-        res["description"] = web::json::value::string(description);
-        res["director"] = web::json::value::string(director);
+        std::string id;
+        std::string title;
+        std::string description;
+        std::string director;
 
-        return res;
-    }
+        web::json::value AsJSON() const
+        {
+            auto res = web::json::value::object();
+            res["id"] = web::json::value::string(id);
+            res["title"] = web::json::value::string(title);
+            res["description"] = web::json::value::string(description);
+            res["director"] = web::json::value::string(director);
 
-    static Metadata FromJSON(web::json::value object)
-    {
-        Metadata result;
-        result.id = object["id"].as_string();
-        result.title = object["title"].as_string();
-        result.description = object["description"].as_string();
-        result.director = object["director"].as_string();
-        return result;
-    }
+            return res;
+        }
 
-    auto MetadataToProto() -> movie::Metadata
-    {
-        movie::Metadata result;
-        result.set_id(id);
+        static Metadata FromJSON(web::json::value object)
+        {
+            Metadata result;
+            result.id = object["id"].as_string();
+            result.title = object["title"].as_string();
+            result.description = object["description"].as_string();
+            result.director = object["director"].as_string();
+            return result;
+        }
 
-        return result;
-    } 
-};
+        auto MetadataToProto() -> movie::Metadata
+        {
+            movie::Metadata result;
+            result.set_id(id);
+            result.set_title(title);
+            result.set_description(description);
+            result.set_director(director);
+
+            return result;
+        }
+
+        static auto MetadataFromProto(const movie::Metadata& data) -> model::Metadata
+        {
+            model::Metadata result;
+            result.id = data.id();
+            result.title = data.title();
+            result.description = data.description();
+            result.director = data.director();
+
+            return result;
+        }
+    };
 
 
 }

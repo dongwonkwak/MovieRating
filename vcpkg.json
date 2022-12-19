@@ -10,6 +10,7 @@
         "josuttis-jthread",
         "fmt",
         "range-v3",
-        "grpc"
+        "grpc",
+        "cppcoro"
     ]
 }
