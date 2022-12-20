@@ -32,11 +32,8 @@ private:
                 grpc::StatusCode::NOT_FOUND,
                 "not found");
         }
-        movie::MovieDetails result;
-        auto data = details->metadata.MetadataToProto();
-        result.set_allocated_metadata(&data);
-        result.set_rating(details->rating);
-        response->set_allocated_movie_details(&result);
+                
+        response->mutable_movie_details()->CopyFrom(details->MovieDetailsToProto());
 
         return Status::OK;
     }

@@ -37,8 +37,9 @@ private:
                 grpc::StatusCode::NOT_FOUND,
                 "not found");
         }
+
         auto result = id->MetadataToProto();
-        response->set_allocated_metadata(&result);
+        response->mutable_metadata()->CopyFrom(result);
 
         return Status::OK;
     }
