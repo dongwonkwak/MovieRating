@@ -13,6 +13,7 @@
         "grpc",
         "cppcoro",
         "librdkafka",
-        "spdlog"
+        "spdlog",
+        "gtest"
     ]
 }

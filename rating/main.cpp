@@ -3,6 +3,7 @@
 #include "rating/controller/controller.h"
 #include "rating/service/http/rating_service.h"
 #include "rating/service/grpc/rating_service.h"
+#include "rating/ingester/kafka/ingester.h"
 using namespace rating;
 
 #include <cppcoro/static_thread_pool.hpp>
@@ -23,7 +24,8 @@ int main(int argc, char* argv[])
     registry->Register(serviceId, serviceName, "8082");
 
     auto repository = std::make_unique<repository::Repository>();
-    auto controller = std::make_unique<controller::Controller>(std::move(repository));
+    auto ingester = ingester::kafka::Ingester::NewIngester("localhost", "movie-rating", "ratings");
+    auto controller = std::make_unique<controller::Controller>(std::move(repository), ingester);
     const string_t addr = "localhost:8082";
     auto service = std::make_unique<service::grpc::RatingService>(std::move(controller), addr);
     ucout << utility::string_t(U("Rating Service Listening for requests at: ")) << addr << std::endl;

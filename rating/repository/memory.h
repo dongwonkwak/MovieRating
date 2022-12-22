@@ -1,6 +1,6 @@
 #pragma once
 
-#include "model/rating.h"
+#include "rating/model/rating.h"
 #include "common/expected.h"
 
 #include <map>

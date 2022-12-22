@@ -1,5 +1,5 @@
 #include "controller.h"
-#include "repository/repository.h"
+#include "metadata/repository/repository.h"
 
 namespace metadata::controller
 {

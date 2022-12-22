@@ -1,6 +1,6 @@
 #pragma once
 
-#include "model/metadata.h"
+#include "metadata/model/metadata.h"
 #include "common/expected.h"
 
 #include <map>

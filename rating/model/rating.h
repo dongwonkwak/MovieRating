@@ -65,4 +65,40 @@ namespace rating::model
     constexpr std::string_view RatingEventTypeDelete = "delete";
 
     web::json::value AsJSON(const common::expected<std::vector<common::expected<Rating>>>& rating);
+
+    struct RatingEvent
+    {
+        std::string userId;
+        std::string recordId;
+        std::string recordType;
+        int value;
+        std::string providerId;
+        std::string eventType;
+
+        static RatingEvent FromJSON(web::json::value object)
+        {
+            RatingEvent result;
+            result.userId = object["userId"].as_string();
+            result.recordId = object["recordId"].as_string();
+            result.recordType = object["recordType"].as_string();
+            result.value = object["value"].as_integer();
+            result.providerId = object["providerId"].as_string();
+            result.eventType = object["eventType"].as_string();
+
+            return result;
+        }
+
+        web::json::value AsJSON() const
+        {
+            auto res = web::json::value::object();
+            res["userId"] = web::json::value::string(userId);
+            res["recordId"] = web::json::value::string(recordId);
+            res["recordType"] = web::json::value::string(recordType);
+            res["value"] = web::json::value::number(value);
+            res["providerId"] = web::json::value::string(providerId);
+            res["eventType"] = web::json::value::string(eventType);
+
+            return res;
+        }
+    };
 }

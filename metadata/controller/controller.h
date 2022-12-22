@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "model/metadata.h"
+#include "metadata/model/metadata.h"
 #include "common/expected.h"
 
 namespace metadata::repository

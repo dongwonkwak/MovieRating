@@ -19,7 +19,7 @@ namespace rating::service::http
     {
     public:
         HttpService(std::unique_ptr<rating::controller::Controller> controller, utility::string_t url);
-        pplx::task<void> start() { return listener_.open(); }
+        pplx::task<void> start();
         pplx::task<void> stop() { return listener_.close(); }
     private:
         void handle_get(http_request message);

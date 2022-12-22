@@ -96,6 +96,7 @@ namespace rating::service::grpc
     
     void RatingService::start()
     {
+        controller_->StartIngestion();
         std::cout << "GrpcService start\n";
         ServerBuilder builder;
         RatingServiceImpl service(controller_);

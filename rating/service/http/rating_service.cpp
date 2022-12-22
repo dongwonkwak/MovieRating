@@ -13,6 +13,12 @@ namespace rating::service::http
         listener_.support(methods::PUT, std::bind(&HttpService::handle_put, this, std::placeholders::_1));
     }
 
+    pplx::task<void> HttpService::start()
+    {
+        controller_->StartIngestion();
+        return listener_.open();
+    }
+
     void HttpService::handle_get(http_request message)
     {
         std::map<utility::string_t, utility::string_t> query =

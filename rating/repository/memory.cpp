@@ -1,4 +1,4 @@
-#include "repository/memory.h"
+#include "rating/repository/memory.h"
 
 namespace rating::repository
 {
