@@ -1,11 +1,11 @@
 #include "rating/controller/controller.h"
-#include "rating/repository/memory.h"
+#include "rating/repository/memory/memory.h"
 #include "rating/ingester/kafka/ingester.h"
 
 namespace rating::controller
 {
     Controller::Controller(
-        std::unique_ptr<rating::repository::Repository> repository,
+        std::unique_ptr<rating::repository::IRepository> repository,
         std::shared_ptr<rating::ingester::kafka::Ingester> ingester)
         : repository_{std::move(repository)}
         , ingester_(ingester)

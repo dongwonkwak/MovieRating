@@ -1,6 +1,7 @@
 #include "rating/service/grpc/rating_service.h"
 #include "rating/controller/controller.h"
-#include "rating/repository/memory.h"
+#include "rating/repository/memory/memory.h"
+#include "rating/repository/postgresql/postgresql.h"
 
 using grpc::Status;
 using movie::GetAggregatedRatingRequest;

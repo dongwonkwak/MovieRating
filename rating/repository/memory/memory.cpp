@@ -1,6 +1,6 @@
-#include "rating/repository/memory.h"
+#include "rating/repository/memory/memory.h"
 
-namespace rating::repository
+namespace rating::repository::memory
 {
 
     auto Repository::Get(const RecordID& recordID, const RecordType& recordType)

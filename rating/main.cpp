@@ -1,5 +1,6 @@
 #include <iostream>
-#include "rating/repository/memory.h"
+#include "rating/repository/memory/memory.h"
+#include "rating/repository/postgresql/postgresql.h"
 #include "rating/controller/controller.h"
 #include "rating/service/http/rating_service.h"
 #include "rating/service/grpc/rating_service.h"
@@ -23,7 +24,8 @@ int main(int argc, char* argv[])
     auto registry = discovery::ConsulRegistry::Create();
     registry->Register(serviceId, serviceName, "8082");
 
-    auto repository = std::make_unique<repository::Repository>();
+    //auto repository = std::make_unique<repository::memory::Repository>();
+    auto repository = std::make_unique<repository::postresql::Repository>("postgresql://postgres:postgres@localhost:5432/movie_db");
     auto ingester = ingester::kafka::Ingester::NewIngester("localhost", "movie-rating", "ratings");
     auto controller = std::make_unique<controller::Controller>(std::move(repository), ingester);
     const string_t addr = "localhost:8082";

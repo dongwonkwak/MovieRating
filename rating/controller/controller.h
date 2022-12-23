@@ -10,7 +10,7 @@
 
 namespace rating::repository
 {
-    class Repository;
+    class IRepository;
 }
 
 namespace rating::ingester::kafka
@@ -26,7 +26,7 @@ namespace rating::controller
         using RecordType = std::string;
     public:
         explicit Controller(
-            std::unique_ptr<rating::repository::Repository> repository,
+            std::unique_ptr<rating::repository::IRepository> repository,
             std::shared_ptr<rating::ingester::kafka::Ingester> ingester);
         ~Controller();
         auto Get(const RecordID& recordID, const RecordType& recordType)
@@ -37,7 +37,7 @@ namespace rating::controller
     private:
         void doIngestion(const std::stop_token& token);
     private:
-        std::unique_ptr<rating::repository::Repository> repository_;
+        std::unique_ptr<rating::repository::IRepository> repository_;
         std::shared_ptr<rating::ingester::kafka::Ingester> ingester_;
         std::jthread ingestThread_;
         bool isStart_ = false;

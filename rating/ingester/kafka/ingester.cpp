@@ -44,7 +44,6 @@ namespace rating::ingester::kafka
         const Properties props({
             {"bootstrap.servers", {addr}},
             {"group.id", {groupId}},
-            {"enable.idempotence", {"true" }},
         });
         auto consumer = std::make_unique<KafkaConsumer>(props);
         consumer->subscribe({topic});
