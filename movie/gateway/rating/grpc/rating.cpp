@@ -63,20 +63,13 @@ namespace movie::gateway::rating::grpc
             return common::unexpected{"record ID or record type is empty"};
         }
 
-        auto conn = grpcutil::ServiceConnection("rating", registry_);
-        if (!conn.has_value())
-        {
-            return common::unexpected("there is no rating service");
-        }
-
-        RatingServiceClient client(conn.value());
-        auto resp = client.GetAggretatedRating(recordID, recordType);
-        if (!resp.has_value())
-        {
-            return common::unexpected("not found");
-        }
-
-        return resp;
+        return grpcutil::ServiceConnection("rating", registry_)
+                .map([=](auto conn) {
+                    RatingServiceClient client(conn);
+                    return client.GetAggretatedRating(recordID, recordType);
+                })
+                .map_error([](auto e) { return common::unexpected{"there is no rating service"}; })
+                .value();
     }
 
     void RatingGateway::PutRating(

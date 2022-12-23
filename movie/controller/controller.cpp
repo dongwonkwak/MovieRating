@@ -11,25 +11,23 @@ namespace movie::controller
 
     }
 
+
     auto Controller::Get(const std::string& id) 
         -> common::expected<movie::model::MovieDetails>
     {
-        auto metadata = metadataGateway_->Get(id);
-        if (!metadata.has_value())
-        {
-            return common::unexpected{"can't find id"};
-        }
-        //auto details
-
-        auto rating = ratingGateway_->GetAggretatedRating(id, rating::model::RecordTypeMovie.data());
-        if (!rating.has_value())
-        {
-            return common::unexpected{"can't find rating"};
-        }
+        using namespace common;
         model::MovieDetails details;
-        details.metadata = metadata.value();
-        details.rating = rating.value();
 
-        return details;
+        return metadataGateway_->Get(id)
+            .and_then([&](auto metadata) {
+                details.metadata = metadata;
+                return ratingGateway_->GetAggretatedRating(id, rating::model::RecordTypeMovie.data());
+            })
+            .map([&](auto rating) {
+                details.rating = rating;
+                return details;
+            })
+            .map_error([](auto e) { return unexpected{"can't find id"}; })
+            .value();
     }
 }

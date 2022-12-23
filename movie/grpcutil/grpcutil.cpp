@@ -1,9 +1,9 @@
 #include "movie/grpcutil/grpcutil.h"
 
+#include <fmt/core.h>
+
 #include <time.h>
 #include <stdio.h>
-
-#include <fmt/core.h>
 
 namespace movie::grpcutil
 {
@@ -11,16 +11,15 @@ namespace movie::grpcutil
                             const std::shared_ptr<discovery::Registry>& registry)
         -> common::expected<std::shared_ptr<grpc::Channel>>
     {
-        auto addrs = registry->ServiceAddress(serviceName);
-        if (!addrs.has_value())
-        {
-            return common::unexpected{fmt::format("can't find [{}] service.", serviceName)};
-        }
-        
         srand(time(NULL));
 
-        return grpc::CreateChannel(
-            addrs.value()[rand() % addrs->size()],
-            grpc::InsecureChannelCredentials());
+        return registry->ServiceAddress(serviceName)
+            .map([=](auto addrs) {
+                return grpc::CreateChannel(
+                    addrs[rand() % addrs.size()],
+                    grpc::InsecureChannelCredentials());
+            })
+            .map_error([=](auto e) { common::unexpected{fmt::format("can't find [{}] service.", serviceName)}; })
+            .value();
     }
 }

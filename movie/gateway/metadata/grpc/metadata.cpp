@@ -77,19 +77,15 @@ namespace movie::gateway::metadata::grpc
             return common::unexpected{"id is empty"};
         }
 
-        auto conn = grpcutil::ServiceConnection("metadata", registry_);
-        if (!conn.has_value())
-        {
-            return common::unexpected("there is no metadata service");
-        }
-
-        MetadataServiceClient client(conn.value());
-        auto resp = client.Get(id);
-        if (!resp.has_value())
-        {
-            return common::unexpected("not found");
-        }
-
-        return ::metadata::model::Metadata::MetadataFromProto(resp.value());
+        return grpcutil::ServiceConnection("metadata", registry_)
+            .and_then([=](auto conn) {
+                MetadataServiceClient client(conn);
+                return client.Get(id);
+            })
+            .map([=](auto resp) {
+                return ::metadata::model::Metadata::MetadataFromProto(resp);
+            })
+            .map_error([](auto e) { return common::unexpected{"here is no metadata service"}; })
+            .value();
     }
 }

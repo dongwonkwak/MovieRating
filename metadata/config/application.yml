@@ -1,0 +1,18 @@
+application:
+  name: metadata
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+    
+grpc:
+  server:
+    host: localhost
+    port: 8081
+
+logging:
+  file: /logs/metadata_log.txt
+  level: info
+  pattern:
+    console: %+
+    file: %Y-%M-%d %H:%M:%S [%^%l%$] [thread %t] %v
