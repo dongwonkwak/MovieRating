@@ -1,3 +1,4 @@
+#include "spdlog/spdlog.h"
 #include <fmt/core.h>
 #include <fmt/std.h>
 
@@ -25,7 +26,7 @@ public:
     auto Get(const std::string& id) 
         -> common::expected<movie::Metadata>
     {
-
+        spdlog::debug("MetadataServiceClient got Get request - id: {}", id);
         ClientContext context;
         GetMetadataRequest request;
         GetMetadataResponse response;

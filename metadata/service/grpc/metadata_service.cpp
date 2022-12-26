@@ -1,3 +1,4 @@
+#include "spdlog/spdlog.h"
 #include "metadata/service/grpc/metadata_service.h"
 #include "metadata/controller/controller.h"
 #include "metadata/repository/repository.h"
@@ -75,7 +76,7 @@ namespace metadata::service::grpc
     
     void MetadataService::start()
     {
-        std::cout << "GrpcService start\n";
+        spdlog::info("Metadata GrpcService starts...");
         ServerBuilder builder;
         MetadataServiceImpl service(controller_);
         builder.AddListeningPort(addr_, ::grpc::InsecureServerCredentials());
@@ -90,7 +91,7 @@ namespace metadata::service::grpc
     {
         if (server_)
         {
-            std::cout << "stop!!\n";
+            spdlog::info("Metadata GrpcService is stopped...");
             server_->Shutdown();
             server_.release();
         }

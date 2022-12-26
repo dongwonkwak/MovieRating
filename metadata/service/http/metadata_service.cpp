@@ -1,3 +1,4 @@
+#include "spdlog/spdlog.h"
 #include "metadata/service/http/metadata_service.h"
 #include "metadata/controller/controller.h"
 #include "metadata/repository/repository.h"
@@ -18,23 +19,27 @@ namespace metadata::service::http
     {
         std::map<utility::string_t, utility::string_t> query =
             uri::split_query(uri::decode(message.request_uri().query()));
+
+        spdlog::debug("got request: {}", message.relative_uri().query().c_str());
+        
         auto found = query.find("id");
         if (found == query.end())
         {
+            spdlog::debug("empty id");
             message.reply(status_codes::NotFound);
         }
         else
         {
-            ucout << found->second << std::endl;
-            auto id = controller_->Get(found->second);
-            if (id)
-            {
-                message.reply(status_codes::OK, id.value().AsJSON());
-            }
-            else
-            {
-                message.reply(status_codes::NotFound);
-            }
+            spdlog::debug("id: {}", found->second);
+            controller_->Get(found->second)
+                .map([=](auto id) {
+                    spdlog::debug("found!");
+                    message.reply(status_codes::OK, id.AsJSON());
+                })
+                .map_error([=](auto e) {
+                    spdlog::debug("not found");
+                    message.reply(status_codes::NotFound);
+                });
         }
 
     }

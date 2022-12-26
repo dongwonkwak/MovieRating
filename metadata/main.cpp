@@ -1,3 +1,5 @@
+#include "spdlog/spdlog.h"
+
 #include "metadata/repository/repository.h"
 #include "metadata/controller/controller.h"
 #include "metadata/service/http/metadata_service.h"
@@ -14,6 +16,7 @@ using namespace metadata;
 #include <cppcoro/schedule_on.hpp>
 #include <discovery/consul.h>
 
+
 #include <iostream>
 
 
@@ -29,7 +32,7 @@ int main(int argc, char* argv[])
     auto controller = std::make_unique<controller::Controller>(std::move(repository));
     const string_t addr = "localhost:8081";
     auto service = std::make_unique<service::grpc::MetadataService>(std::move(controller), addr);
-    ucout << utility::string_t(U("Metadata Service Listening for requests at: ")) << addr << std::endl;
+    spdlog::info("Metadata Service Listening for requests at: {}", addr.c_str());
     auto thread_pool = cppcoro::static_thread_pool{2};
 
     auto func = [&]() -> cppcoro::task<>

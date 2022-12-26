@@ -1,3 +1,5 @@
+#include "spdlog/spdlog.h"
+
 #include "movie/gateway/metadata/http/metadata.h"
 #include "movie/gateway/rating/http/rating.h"
 #include "movie/gateway/metadata/grpc/metadata.h"
@@ -38,8 +40,7 @@ int main(int argc, char* argv[])
         std::move(metadataGateway));
     const string_t addr = "localhost:8083";
     auto service = std::make_unique<movie::service::grpc::MovieService>(std::move(controller), addr);
-
-    ucout << utility::string_t(U("Movie Service Listening for requests at: ")) << addr << std::endl;
+    spdlog::info("Movie Service Listening for requests at: {}", addr.c_str());
     auto thread_pool = cppcoro::static_thread_pool{2};
 
     auto func = [&]() -> cppcoro::task<>

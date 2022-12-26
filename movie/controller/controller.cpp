@@ -1,3 +1,4 @@
+#include "spdlog/spdlog.h"
 #include "movie/controller/controller.h"
 
 namespace movie::controller
@@ -17,6 +18,7 @@ namespace movie::controller
     {
         using namespace common;
         model::MovieDetails details;
+        spdlog::debug("Controller got request - id: {}", id);
 
         return metadataGateway_->Get(id)
             .and_then([&](auto metadata) {
