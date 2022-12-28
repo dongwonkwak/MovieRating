@@ -8,7 +8,7 @@ include_directories(../)
 include_directories(${CMAKE_BINARY_DIR})
 
 add_library(${project_name}-lib 
-    Application.cpp
+    application.cpp
     service/http/movie_service.cpp
     service/grpc/movie_service.cpp
     controller/controller.cpp

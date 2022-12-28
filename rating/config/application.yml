@@ -1,0 +1,26 @@
+application:
+  name: rating
+  datasource:
+    url: localhost:5432/movie_db
+    user: postgres
+    password: postgres
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:8082
+      group-id: movie-rating
+    
+grpc:
+  server:
+    host: localhost
+    port: 8082
+
+logging:
+  file: /logs/rating_log.txt
+  level: info
+  pattern:
+    console: "%+"
+    file: "%Y-%M-%d %H:%M:%S [%^%l%$] [thread %t] %v"

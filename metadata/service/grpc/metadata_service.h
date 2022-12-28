@@ -23,7 +23,7 @@ namespace metadata::service::grpc
     class MetadataService
     {
     public:
-        MetadataService(std::unique_ptr<controller::Controller> controller, const std::string& addr);
+        MetadataService(const std::shared_ptr<controller::Controller>& controller, const std::string& addr);
         ~MetadataService();
         void start();
         void stop();

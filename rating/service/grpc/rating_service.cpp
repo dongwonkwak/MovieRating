@@ -14,7 +14,7 @@ using movie::PutRatingResponse;
 class RatingServiceImpl final : public movie::RatingService::Service
 {
 public:
-    explicit RatingServiceImpl(std::shared_ptr<rating::controller::Controller> controller)
+    explicit RatingServiceImpl(const std::shared_ptr<rating::controller::Controller>& controller)
         : controller_(controller)
     {}
 private:
@@ -82,8 +82,8 @@ private:
 
 namespace rating::service::grpc
 {
-    RatingService::RatingService(std::unique_ptr<rating::controller::Controller> controller, const std::string &addr)
-        : controller_(std::move(controller))
+    RatingService::RatingService(const std::shared_ptr<rating::controller::Controller>& controller, const std::string &addr)
+        : controller_(controller)
         , addr_(addr)
     {
         ::grpc::EnableDefaultHealthCheckService(true);

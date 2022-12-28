@@ -26,8 +26,8 @@ namespace rating::controller
         using RecordType = std::string;
     public:
         explicit Controller(
-            std::unique_ptr<rating::repository::IRepository> repository,
-            std::shared_ptr<rating::ingester::kafka::Ingester> ingester);
+            const std::shared_ptr<rating::repository::IRepository>& repository,
+            const std::shared_ptr<rating::ingester::kafka::Ingester>& ingester);
         ~Controller();
         auto Get(const RecordID& recordID, const RecordType& recordType)
             -> common::expected<std::vector<common::expected<model::Rating>>>;
@@ -37,7 +37,7 @@ namespace rating::controller
     private:
         void doIngestion(const std::stop_token& token);
     private:
-        std::unique_ptr<rating::repository::IRepository> repository_;
+        std::shared_ptr<rating::repository::IRepository> repository_;
         std::shared_ptr<rating::ingester::kafka::Ingester> ingester_;
         std::jthread ingestThread_;
         bool isStart_ = false;

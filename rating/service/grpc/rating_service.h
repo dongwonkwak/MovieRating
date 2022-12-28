@@ -22,7 +22,7 @@ namespace rating::service::grpc
     class RatingService
     {
     public:
-        RatingService(std::unique_ptr<rating::controller::Controller> controller, const std::string& addr);
+        RatingService(const std::shared_ptr<rating::controller::Controller>& controller, const std::string& addr);
         ~RatingService();
         void start();
         void stop();

@@ -5,9 +5,9 @@
 
 namespace rating::service::http
 {
-    HttpService::HttpService(std::unique_ptr<rating::controller::Controller> controller, utility::string_t url)
+    HttpService::HttpService(const std::shared_ptr<rating::controller::Controller>& controller, utility::string_t url)
         : listener_(url)
-        , controller_(std::move(controller))
+        , controller_(controller)
     {
         listener_.support(methods::GET, std::bind(&HttpService::handle_get, this, std::placeholders::_1));
         listener_.support(methods::PUT, std::bind(&HttpService::handle_put, this, std::placeholders::_1));

@@ -5,9 +5,9 @@
 namespace rating::controller
 {
     Controller::Controller(
-        std::unique_ptr<rating::repository::IRepository> repository,
-        std::shared_ptr<rating::ingester::kafka::Ingester> ingester)
-        : repository_{std::move(repository)}
+        const std::shared_ptr<rating::repository::IRepository>& repository,
+        const std::shared_ptr<rating::ingester::kafka::Ingester>& ingester)
+        : repository_(repository)
         , ingester_(ingester)
     {
 

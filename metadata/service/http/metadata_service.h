@@ -19,7 +19,7 @@ namespace metadata::service::http
     class MetadataService
     {
     public:
-        MetadataService(std::unique_ptr<controller::Controller> controller, utility::string_t url);
+        MetadataService(const std::shared_ptr<controller::Controller>& controller, utility::string_t url);
         pplx::task<void> start() { return listener_.open(); }
         pplx::task<void> stop() { return listener_.close(); }
     private:
@@ -27,6 +27,6 @@ namespace metadata::service::http
         void handle_put(http_request message);
     private:
         http_listener listener_;
-        std::unique_ptr<metadata::controller::Controller> controller_;
+        std::shared_ptr<metadata::controller::Controller> controller_;
     };
 }

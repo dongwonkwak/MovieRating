@@ -7,8 +7,8 @@
 
 namespace metadata::service::http
 {
-    MetadataService::MetadataService(std::unique_ptr<metadata::controller::Controller> controller, utility::string_t url)
-        : controller_(std::move(controller))
+    MetadataService::MetadataService(const std::shared_ptr<metadata::controller::Controller>& controller, utility::string_t url)
+        : controller_(controller)
         , listener_(url)
     {
         listener_.support(methods::GET, std::bind(&MetadataService::handle_get, this, std::placeholders::_1));

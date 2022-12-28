@@ -1,9 +1,9 @@
 #include <fmt/core.h>
 #include <spdlog/spdlog.h>
 
-#include "movie/application.h"
-#include "movie/gateway/metadata/grpc/metadata.h"
-#include "movie/gateway/rating/grpc/rating.h"
+#include "rating/application.h"
+#include "rating/repository/postgresql/postgresql.h"
+#include "rating/ingester/kafka/ingester.h"
 
 #include <map>
 
@@ -15,10 +15,9 @@ static std::map<std::string, spdlog::level::level_enum> logLevelTable {
         {"warn", spdlog::level::warn},
         {"err", spdlog::level::err}
     };
-namespace movie
-{
-    using namespace config;
 
+namespace rating
+{
     Application::Application(const boost::program_options::variables_map& vm)
     {
         std::string configFile = vm["config-file"].as<std::string>();
@@ -59,7 +58,7 @@ namespace movie
             auto serviceName = configService->get<std::string>("application.name");
             auto serviceId = discovery::GenerateServiceID(serviceName);
             std::string consulAddr = "http://localhost:8500";
-            ushort hostPort = 8083;
+            ushort hostPort = 8082;
 
             try
             {
@@ -89,11 +88,20 @@ namespace movie
     void Application::CreateController()
     {
         CREATE_SHARED_SERVICE(std::shared_ptr<controller::Controller>, controller)([]{
-            GET_SERVICE(std::shared_ptr<discovery::Registry>, registry);
-            auto metadataGateway = std::make_shared<gateway::metadata::grpc::MetadataGateway>(registry);
-            auto ratingGateway = std::make_shared<gateway::rating::grpc::RatingGateway>(registry);
+            GET_SERVICE(std::shared_ptr<config::Config>, configService);
+            auto connectString = 
+                fmt::format("postgresql://{}:{}@{}",
+                            configService->get<std::string>("application.datasource.user"),
+                            configService->get<std::string>("application.datasource.password"),
+                            configService->get<std::string>("application.datasource.url"));
+            auto repository = std::make_shared<repository::postresql::Repository>(connectString);
+            auto kafkaHost = configService->get<std::string>("application.kafka.consumer.bootstrap-servers");
+            auto groupId = configService->get<std::string>("application.kafka.consumer.group-id");
+            const std::string topic = "ratings";
 
-            return std::make_shared<controller::Controller>(ratingGateway, metadataGateway);
+            auto ingester = ingester::kafka::Ingester::NewIngester(kafkaHost, groupId, topic);
+
+            return std::make_shared<controller::Controller>(std::move(repository), ingester);
         }());
 
         controller_ = controller;

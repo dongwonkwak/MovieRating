@@ -3,8 +3,8 @@
 
 namespace metadata::controller
 {
-Controller::Controller(std::unique_ptr<metadata::repository::Repository> repository)
-    : repository_{std::move(repository)}
+Controller::Controller(const std::shared_ptr<metadata::repository::Repository>& repository)
+    : repository_{repository}
 {
 
 }

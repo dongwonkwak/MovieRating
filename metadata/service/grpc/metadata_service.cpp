@@ -14,7 +14,7 @@ using movie::PutMetadataResponse;
 class MetadataServiceImpl final : public movie::MetadataService::Service
 {
 public:
-    explicit MetadataServiceImpl(std::shared_ptr<metadata::controller::Controller> controller)
+    explicit MetadataServiceImpl(const std::shared_ptr<metadata::controller::Controller>& controller)
         : controller_(controller)
     {
 
@@ -61,8 +61,8 @@ private:
 namespace metadata::service::grpc
 {
 
-    MetadataService::MetadataService(std::unique_ptr<controller::Controller> controller, const std::string &addr)
-        : controller_(std::move(controller))
+    MetadataService::MetadataService(const std::shared_ptr<controller::Controller>& controller, const std::string &addr)
+        : controller_(controller)
         , addr_(addr)
     {
         ::grpc::EnableDefaultHealthCheckService(true);

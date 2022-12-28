@@ -1,16 +1,15 @@
 cmake_minimum_required(VERSION 3.20.0)
-project(rating)
+set(project_name rating)
+set(CMAKE_CXX_STANDARD 20)
+
+project(${project_name} LANGUAGES CXX)
 
 include_directories(../)
 include_directories(../extern/include)
 include_directories(${CMAKE_BINARY_DIR})
 
-find_package(cppcoro CONFIG REQUIRED)
-find_package(RdKafka CONFIG REQUIRED)
-find_package(libpqxx CONFIG REQUIRED)
-
-add_executable(rating 
-    main.cpp
+add_library(${project_name}-lib  
+    application.cpp
     repository/memory/memory.cpp
     repository/postgresql/postgresql.cpp
     service/grpc/rating_service.cpp
@@ -19,9 +18,18 @@ add_executable(rating
     ingester/kafka/ingester.cpp
 )
 
-target_link_libraries(rating PRIVATE 
+find_package(cppcoro CONFIG REQUIRED)
+find_package(cpprestsdk CONFIG REQUIRED)
+find_package(Boost 1.81.0 COMPONENTS program_options)
+find_package(spdlog CONFIG REQUIRED)
+find_package(RdKafka CONFIG REQUIRED)
+find_package(libpqxx CONFIG REQUIRED)
+
+target_link_libraries(${project_name}-lib PRIVATE 
     cpprestsdk::cpprest 
-    ${OPENSSL_LIBRARIES}
+    config
+    spdlog::spdlog
+    ${Boost_LIBRARIES}
     RdKafka::rdkafka RdKafka::rdkafka++
     libpqxx::pqxx
     discovery
@@ -29,4 +37,7 @@ target_link_libraries(rating PRIVATE
     proto-object
     common)
 
-add_subdirectory(test)
+add_executable(${project_name} runner.cpp main.cpp)
+
+target_link_libraries(${project_name} ${project_name}-lib fmt::fmt spdlog::spdlog)
+add_dependencies(${project_name} ${project_name}-lib)
