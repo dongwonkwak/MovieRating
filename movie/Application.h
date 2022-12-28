@@ -14,6 +14,7 @@ namespace movie
     public:
         Application(const boost::program_options::variables_map& vm);
     private:
+        void InitializeLogger();
         void CreateRegistry();
         void CreateController();
     private:

@@ -34,7 +34,6 @@ namespace config
     {
         if (!filename.empty())
         {
-            std::cout << "load..\n";
             Load(filename);
         }
     }

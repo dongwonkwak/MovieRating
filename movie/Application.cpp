@@ -5,7 +5,16 @@
 #include "movie/gateway/metadata/grpc/metadata.h"
 #include "movie/gateway/rating/grpc/rating.h"
 
+#include <map>
 
+static std::map<std::string, spdlog::level::level_enum> logLevelTable {
+        {"info", spdlog::level::info},
+        {"critical", spdlog::level::critical},
+        {"debug", spdlog::level::debug},
+        {"trace", spdlog::level::trace},
+        {"warn", spdlog::level::warn},
+        {"err", spdlog::level::err}
+    };
 namespace movie
 {
     using namespace config;
@@ -21,8 +30,27 @@ namespace movie
 
         configService_ = config;
 
+        InitializeLogger();
         CreateRegistry();   
         CreateController();
+    }
+    
+    void Application::InitializeLogger()
+    {
+        GET_SERVICE(std::shared_ptr<config::Config>, configService);
+
+        auto pattern = configService->get<std::string>("logging.pattern.console");
+        if (!pattern.empty())
+        {
+            spdlog::set_pattern(pattern);
+        }
+        auto level = configService->get<std::string>("logging.level");
+        auto level_iter = logLevelTable.find(level);
+        if (level_iter != logLevelTable.end())
+        {
+            spdlog::set_level(level_iter->second);
+        }
+        spdlog::info("InitializeLogger");
     }
 
     void Application::CreateRegistry()
@@ -43,7 +71,7 @@ namespace movie
             }
             catch(const std::exception& e)
             {
-                std::cerr << e.what() << '\n';
+                spdlog::error(e.what());
             }
 
             spdlog::info(fmt::format("Consul address: {}", consulAddr));

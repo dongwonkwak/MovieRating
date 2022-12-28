@@ -36,5 +36,5 @@ target_link_libraries(${project_name}-lib PRIVATE
 
 add_executable(${project_name} runner.cpp main.cpp)
 
-target_link_libraries(${project_name} ${project_name}-lib fmt::fmt)
+target_link_libraries(${project_name} ${project_name}-lib fmt::fmt spdlog::spdlog)
 add_dependencies(${project_name} ${project_name}-lib)

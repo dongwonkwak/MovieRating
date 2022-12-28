@@ -1,4 +1,4 @@
-//#include <spdlog/spdlog.h>
+#include <spdlog/spdlog.h>
 #include <fmt/core.h>
 
 #include "config/ServiceProvider.h"
@@ -36,7 +36,7 @@ namespace movie
 
         if (!vm.count("config-file"))
         {
-            //spdlog::error("requires config-file options. exit program");
+            std::cerr << "requires config-file option. terminate program.\n";
             exit(-1);
         }
 
@@ -63,7 +63,9 @@ namespace movie
             while (true)
             {
                 co_await thread_pool.schedule();
+
                 registry->ReportHealthyState(serviceId);
+                std::this_thread::sleep_for(std::chrono::seconds(3));
             }
             co_return;
         };
