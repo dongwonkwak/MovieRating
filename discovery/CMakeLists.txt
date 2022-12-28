@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.20.0)
 project(discovery)
 
 find_package(ppconsul CONFIG REQUIRED)
+find_package(range-v3 CONFIG REQUIRED)
+find_package(fmt CONFIG REQUIRED)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(../)

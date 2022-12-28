@@ -16,6 +16,7 @@ namespace discovery
         void Deregister(const std::string& serviceId) override;
         void ReportHealthyState(const std::string& serviceId) override;
         common::expected<std::vector<std::string>> ServiceAddress(const std::string& serviceName) override;
+        std::string GetServiceID() const override;
     private:
         std::mutex mutex_;
     };

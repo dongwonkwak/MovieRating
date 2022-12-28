@@ -1,5 +1,5 @@
 application:
-  name: metadata
+  name: movie
   cloud:
     consul:
       host: localhost
@@ -8,10 +8,10 @@ application:
 grpc:
   server:
     host: localhost
-    port: 8083
+    port: 8081
 
 logging:
-  file: /logs/movie_log.txt
+  file: /logs/metadata_log.txt
   level: info
   pattern:
     console: "%+"

@@ -13,7 +13,6 @@ add_executable(rating
     main.cpp
     repository/memory/memory.cpp
     repository/postgresql/postgresql.cpp
-    model/rating.cpp
     service/grpc/rating_service.cpp
     service/http/rating_service.cpp
     controller/controller.cpp

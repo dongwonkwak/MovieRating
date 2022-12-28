@@ -17,7 +17,7 @@ using movie::GetMetadataResponse;
 class MetadataServiceClient
 {
 public:
-    MetadataServiceClient(std::shared_ptr<Channel> channel)
+    MetadataServiceClient(const std::shared_ptr<Channel>& channel)
         : stub_(movie::MetadataService::NewStub(channel))
     {
     
@@ -47,22 +47,10 @@ private:
 
 namespace movie::gateway::metadata::grpc
 {
-    MetadataGateway::MetadataGateway(std::shared_ptr<discovery::Registry> registry) noexcept
+    MetadataGateway::MetadataGateway(const std::shared_ptr<discovery::Registry>& registry) noexcept
        : registry_(registry)
     {
 
-    }
-
-    MetadataGateway::MetadataGateway(MetadataGateway&& other)
-        : registry_(std::move(other.registry_))
-    {
-
-    }
-
-    MetadataGateway& MetadataGateway::operator=(MetadataGateway&& other)
-    {
-        registry_ = std::move(other.registry_);
-        return *this;
     }
 
     MetadataGateway::~MetadataGateway() noexcept

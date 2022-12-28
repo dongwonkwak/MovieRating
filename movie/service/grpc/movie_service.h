@@ -10,6 +10,8 @@ using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
 
+#include <jthread.hpp>
+
 
 #include <memory>
 #include <string>
@@ -24,7 +26,7 @@ namespace movie::service::grpc
     class MovieService
     {
     public:
-        MovieService(std::unique_ptr<controller::Controller> controller, const std::string& addr);
+        MovieService(const std::shared_ptr<controller::Controller>& controller, const std::string& addr);
         ~MovieService();
         void start();
         void stop();
@@ -32,5 +34,6 @@ namespace movie::service::grpc
         std::shared_ptr<controller::Controller> controller_;
         std::unique_ptr<Server> server_;
         std::string addr_;
+        std::jthread thread_;
     };
 }

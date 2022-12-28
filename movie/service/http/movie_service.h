@@ -18,13 +18,13 @@ namespace movie::service::http
     class MovieService
     {
     public:
-        explicit MovieService(std::unique_ptr<movie::controller::Controller> controller, utility::string_t url);
+        explicit MovieService(const std::shared_ptr<movie::controller::Controller>& controller, utility::string_t url);
         pplx::task<void> start() { return listener_.open(); }
         pplx::task<void> stop() { return listener_.close(); }
     private:
         void handle_get(http_request message);
     private:
         http_listener listener_;
-        std::unique_ptr<movie::controller::Controller> controller_;
+        std::shared_ptr<movie::controller::Controller> controller_;
     };
 }

@@ -1,3 +1,4 @@
+#include <spdlog/spdlog.h>
 #include "movie/service/grpc/movie_service.h"
 #include "movie/controller/controller.h"
 #include "movie/grpcutil/grpcutil.h"
@@ -7,10 +8,13 @@ using grpc::Status;
 using movie::GetMovieDetailsRequest;
 using movie::GetMovieDetailsResponse;
 
+#include <condition_variable_any2.hpp>
+
+
 class MovieServiceImpl final : public movie::MovieService::Service
 {
 public:
-    explicit MovieServiceImpl(std::shared_ptr<movie::controller::Controller> controller)
+    explicit MovieServiceImpl(const std::shared_ptr<movie::controller::Controller>& controller)
         : controller_(controller)
     {}
 private:
@@ -44,8 +48,8 @@ private:
 
 namespace movie::service::grpc
 {
-    MovieService::MovieService(std::unique_ptr<controller::Controller> controller, const std::string &addr)
-        : controller_(std::move(controller))
+    MovieService::MovieService(const std::shared_ptr<controller::Controller>& controller, const std::string &addr)
+        : controller_(controller)
         , addr_(addr)
     {
         ::grpc::EnableDefaultHealthCheckService(true);
@@ -59,24 +63,28 @@ namespace movie::service::grpc
     
     void MovieService::start()
     {
-        std::cout << "GrpcService start\n";
+        spdlog::info("GrpcService is starting...");
         ServerBuilder builder;
         MovieServiceImpl service(controller_);
         builder.AddListeningPort(addr_, ::grpc::InsecureServerCredentials());
         builder.RegisterService(&service);
 
         server_ = std::unique_ptr<Server>(builder.BuildAndStart());
+        thread_ = std::jthread([this](std::stop_token token){
+            std::mutex mutex;
+            std::unique_lock lock(mutex);
+            std::condition_variable_any2().wait(lock, token,
+                        [&token] { return false; });
+            server_->Shutdown();
+        });
 
         server_->Wait();
     }
 
     void MovieService::stop()
     {
-        if (server_)
-        {
-            std::cout << "stop!!\n";
-            server_->Shutdown();
-            server_.release();
-        }
+        spdlog::info("GrpcService is stopped");
+        thread_.request_stop();
+        thread_.join();
     }
 }

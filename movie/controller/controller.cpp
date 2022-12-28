@@ -4,10 +4,10 @@
 namespace movie::controller
 {
     Controller::Controller(
-        std::unique_ptr<gateway::IRatingGateway> ratingGateway, 
-        std::unique_ptr<gateway::IMetadataGateway> metadataGateway)
-        : ratingGateway_(std::move(ratingGateway))
-        , metadataGateway_(std::move(metadataGateway))
+        const std::shared_ptr<gateway::IRatingGateway>& ratingGateway, 
+        const std::shared_ptr<gateway::IMetadataGateway>& metadataGateway)
+        : ratingGateway_(ratingGateway)
+        , metadataGateway_(metadataGateway)
     {
 
     }

@@ -17,6 +17,7 @@ namespace discovery
         virtual void Deregister(const std::string& serviceId) = 0;
         virtual void ReportHealthyState(const std::string& serviceId) = 0;
         virtual common::expected<std::vector<std::string>> ServiceAddress(const std::string& serviceName) = 0;
+        virtual std::string GetServiceID() const = 0;
     };
 
     std::string GenerateServiceID(const std::string& serviceName);

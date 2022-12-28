@@ -47,7 +47,7 @@ private:
 
 namespace movie::gateway::rating::grpc
 {
-    RatingGateway::RatingGateway(std::shared_ptr<discovery::Registry> registry) noexcept
+    RatingGateway::RatingGateway(const std::shared_ptr<discovery::Registry>& registry) noexcept
         : registry_(registry)
     {
 

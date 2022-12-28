@@ -14,11 +14,11 @@ namespace movie::controller
     {
     public:
         explicit Controller(
-            std::unique_ptr<gateway::IRatingGateway> ratingGateway, 
-            std::unique_ptr<gateway::IMetadataGateway> metadataGateway);
+            const std::shared_ptr<gateway::IRatingGateway>& ratingGateway, 
+            const std::shared_ptr<gateway::IMetadataGateway>& metadataGateway);
         auto Get(const std::string& id) -> common::expected<movie::model::MovieDetails>;
     private:
-        std::unique_ptr<gateway::IRatingGateway> ratingGateway_;
-        std::unique_ptr<gateway::IMetadataGateway> metadataGateway_;
+        std::shared_ptr<gateway::IRatingGateway> ratingGateway_;
+        std::shared_ptr<gateway::IMetadataGateway> metadataGateway_;
     };
 }

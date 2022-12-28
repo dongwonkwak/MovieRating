@@ -4,7 +4,7 @@ using namespace web::http;
 
 namespace movie::gateway::rating::http
 {
-    RatingGateway::RatingGateway(std::shared_ptr<discovery::Registry> registry) noexcept
+    RatingGateway::RatingGateway(const std::shared_ptr<discovery::Registry>& registry) noexcept
         : registry_(registry)
     {
 

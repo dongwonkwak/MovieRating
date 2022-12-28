@@ -3,9 +3,9 @@
 
 namespace movie::service::http
 {
-    MovieService::MovieService(std::unique_ptr<movie::controller::Controller> controller, utility::string_t url)
+    MovieService::MovieService(const std::shared_ptr<movie::controller::Controller>& controller, utility::string_t url)
         : listener_(url)
-        , controller_(std::move(controller))
+        , controller_(controller)
     {
         listener_.support(methods::GET, std::bind(&MovieService::handle_get, this, std::placeholders::_1));
     }

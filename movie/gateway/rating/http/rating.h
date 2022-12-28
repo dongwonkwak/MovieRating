@@ -13,7 +13,7 @@ namespace movie::gateway::rating::http
     class RatingGateway : public IRatingGateway
     {
     public:
-        RatingGateway(std::shared_ptr<discovery::Registry> registry) noexcept;
+        RatingGateway(const std::shared_ptr<discovery::Registry>& registry) noexcept;
         common::expected<double> GetAggretatedRating(
                         const std::string& recordID, 
                         const std::string& recordType) override;

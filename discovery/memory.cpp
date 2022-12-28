@@ -32,4 +32,9 @@ namespace discovery
     {
         return std::vector<std::string>{};
     }
+
+    std::string MemoryRegistry::GetServiceID() const
+    {
+        return std::string{};
+    }
 }

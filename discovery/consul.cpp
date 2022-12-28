@@ -79,4 +79,9 @@ namespace discovery
         }
         return ret;
     }
+
+    std::string ConsulRegistry::GetServiceID() const
+    {
+        return serviceId_;
+    }
 }
