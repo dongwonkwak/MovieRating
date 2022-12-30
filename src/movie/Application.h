@@ -1,7 +1,7 @@
 #pragma once
 
 #include "config/config.h"
-#include "config/ServiceProvider.h"
+#include "config/service_provider.h"
 #include "discovery/consul.h"
 #include "movie/controller/controller.h"
 

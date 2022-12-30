@@ -1,6 +1,13 @@
 #include <spdlog/spdlog.h>
 #include <fmt/core.h>
-#include <boost/program_options.hpp>
+
+#include "config/service_provider.h"
+#include "config/config.h"
+#include "movie/runner.h"
+#include "movie/application.h"
+#include "movie/service/grpc/movie_service.h"
+#include "discovery/registry.h"
+
 
 #include <cppcoro/static_thread_pool.hpp>
 #include <cppcoro/task.hpp>
@@ -8,18 +15,15 @@
 #include <cppcoro/when_all.hpp>
 #include <cppcoro/on_scope_exit.hpp>
 
-#include "config/config.h"
-#include "config/ServiceProvider.h"
-#include "discovery/registry.h"
-#include "metadata/runner.h"
-#include "metadata/application.h"
-#include "metadata/controller/controller.h"
-#include "metadata/service/grpc/metadata_service.h"
+#include <boost/program_options.hpp>
 
-#include <iostream>
+namespace movie
+{       
+    Runner::Runner()
+    {
+        
+    }
 
-namespace metadata
-{
     void Runner::run(int argc, char* argv[])
     {
         using namespace boost::program_options;
@@ -40,16 +44,16 @@ namespace metadata
         GET_SERVICE(std::shared_ptr<config::Config>, configService);
         if (configService == nullptr)
         {
-            std::cerr << "configService is null. terminate program.\n";
+            std::cout << "configService is null. terminate program.";
             exit(-1);
         }
         auto addr = fmt::format("{}:{}", 
             configService->get<std::string>("grpc.server.host"),
             configService->get<ushort>("grpc.server.port"));
+        //spdlog::info(fmt::format("Movie Service Listening for requests at: {}", addr));
         GET_SERVICE(std::shared_ptr<controller::Controller>, controller);
+        movie::service::grpc::MovieService server(controller, addr);
         GET_SERVICE(std::shared_ptr<discovery::Registry>, registry);
-        service::grpc::MetadataService server(controller, addr);
-
         cppcoro::static_thread_pool thread_pool;
 
         auto serviceId = registry->GetServiceID();
@@ -77,5 +81,5 @@ namespace metadata
                 co_return;
             }()
         ));
-    }
+    }    
 }

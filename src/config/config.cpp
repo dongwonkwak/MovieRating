@@ -57,6 +57,11 @@ namespace config
     template <typename T>
     T Config::get(const std::string& k)
     {
+        if (rootNode_ == nullptr)
+        {
+            throw std::runtime_error("could not read config-file.");
+        }
+
         using namespace ranges::views;
         auto inp = k 
             | split('.')

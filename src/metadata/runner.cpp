@@ -1,23 +1,24 @@
 #include <spdlog/spdlog.h>
 #include <fmt/core.h>
-#include <cppcoro/static_thread_pool.hpp>
-#include <cppcoro/on_scope_exit.hpp>
-#include <cppcoro/sync_wait.hpp>
-#include <cppcoro/task.hpp>
-#include <cppcoro/when_all.hpp>
-#include <cppcoro/schedule_on.hpp>
 #include <boost/program_options.hpp>
 
-#include "config/ServiceProvider.h"
+#include <cppcoro/static_thread_pool.hpp>
+#include <cppcoro/task.hpp>
+#include <cppcoro/sync_wait.hpp>
+#include <cppcoro/when_all.hpp>
+#include <cppcoro/on_scope_exit.hpp>
+
 #include "config/config.h"
-#include "rating/runner.h"
-#include "rating/application.h"
-#include "rating/service/grpc/rating_service.h"
-#include "discovery/consul.h"
+#include "config/service_provider.h"
+#include "discovery/registry.h"
+#include "metadata/runner.h"
+#include "metadata/application.h"
+#include "metadata/controller/controller.h"
+#include "metadata/service/grpc/metadata_service.h"
 
+#include <iostream>
 
-
-namespace rating
+namespace metadata
 {
     void Runner::run(int argc, char* argv[])
     {
@@ -39,16 +40,16 @@ namespace rating
         GET_SERVICE(std::shared_ptr<config::Config>, configService);
         if (configService == nullptr)
         {
-            std::cout << "configService is null. terminate program.";
+            std::cerr << "configService is null. terminate program.\n";
             exit(-1);
         }
         auto addr = fmt::format("{}:{}", 
             configService->get<std::string>("grpc.server.host"),
             configService->get<ushort>("grpc.server.port"));
-        spdlog::info(fmt::format("Rating Service Listening for requests at: {}", addr));
         GET_SERVICE(std::shared_ptr<controller::Controller>, controller);
-        rating::service::grpc::RatingService server(controller, addr);
         GET_SERVICE(std::shared_ptr<discovery::Registry>, registry);
+        service::grpc::MetadataService server(controller, addr);
+
         cppcoro::static_thread_pool thread_pool;
 
         auto serviceId = registry->GetServiceID();
