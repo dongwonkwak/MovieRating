@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rating/model/rating.h"
+#include "rating/repository/IRepository.h"
 #include "common/expected.h"
 
 #include <jthread.hpp>
@@ -8,10 +9,6 @@
 #include <memory>
 #include <vector>
 
-namespace rating::repository
-{
-    class IRepository;
-}
 
 namespace rating::ingester::kafka
 {

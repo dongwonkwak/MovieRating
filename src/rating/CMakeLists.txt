@@ -24,6 +24,7 @@ find_package(Boost 1.81.0 COMPONENTS program_options)
 find_package(spdlog CONFIG REQUIRED)
 find_package(RdKafka CONFIG REQUIRED)
 find_package(libpqxx CONFIG REQUIRED)
+find_path(HYPODERMIC_INCLUDE_DIRS "Hypodermic/ActivatedRegistrationInfo.h")
 
 target_link_libraries(${project_name}-lib PRIVATE 
     cpprestsdk::cpprest 
@@ -36,6 +37,7 @@ target_link_libraries(${project_name}-lib PRIVATE
     cppcoro
     proto-object
     common)
+target_include_directories(${project_name}-lib PRIVATE ${HYPODERMIC_INCLUDE_DIRS})
 
 add_executable(${project_name} runner.cpp main.cpp)
 

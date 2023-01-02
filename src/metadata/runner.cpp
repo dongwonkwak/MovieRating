@@ -9,13 +9,12 @@
 #include <cppcoro/on_scope_exit.hpp>
 
 #include "config/config.h"
-#include "config/service_provider.h"
 #include "discovery/registry.h"
 #include "metadata/runner.h"
 #include "metadata/application.h"
 #include "metadata/controller/controller.h"
 #include "metadata/service/grpc/metadata_service.h"
-
+#include "metadata/repository/repository.h"
 #include <iostream>
 
 namespace metadata
@@ -37,7 +36,7 @@ namespace metadata
         }
 
         Application app(vm);
-        GET_SERVICE(std::shared_ptr<config::Config>, configService);
+        auto configService = app()->resolve<config::Config>();
         if (configService == nullptr)
         {
             std::cerr << "configService is null. terminate program.\n";
@@ -46,8 +45,8 @@ namespace metadata
         auto addr = fmt::format("{}:{}", 
             configService->get<std::string>("grpc.server.host"),
             configService->get<ushort>("grpc.server.port"));
-        GET_SERVICE(std::shared_ptr<controller::Controller>, controller);
-        GET_SERVICE(std::shared_ptr<discovery::Registry>, registry);
+        auto controller = app()->resolve<controller::Controller>();
+        auto registry = app()->resolve<discovery::Registry>();
         service::grpc::MetadataService server(controller, addr);
 
         cppcoro::static_thread_pool thread_pool;

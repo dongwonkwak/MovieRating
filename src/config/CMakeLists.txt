@@ -3,7 +3,7 @@ project(config)
 
 include_directories(../)
 
-add_library(config config.cpp service_provider.cpp)
+add_library(config config.cpp)
 
 find_package(yaml-cpp CONFIG REQUIRED)
 target_link_libraries(config PRIVATE

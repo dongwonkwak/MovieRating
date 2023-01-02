@@ -1,11 +1,8 @@
 #pragma once
 
-#include "config/config.h"
-#include "config/service_provider.h"
-#include "discovery/consul.h"
-#include "metadata/controller/controller.h"
 
 #include <boost/program_options.hpp>
+#include "Hypodermic/Hypodermic.h"
 
 namespace metadata
 {
@@ -13,13 +10,13 @@ namespace metadata
     {
     public:
         Application(const boost::program_options::variables_map& vm);
+
+        std::shared_ptr<Hypodermic::Container> operator()();
     private:
-        void InitializeLogger();
         void CreateRegistry();
         void CreateController();
-    private:
-        DECLARE_SHARED_SERVICE(std::shared_ptr<config::Config>, configService_);
-        DECLARE_SHARED_SERVICE(std::shared_ptr<discovery::Registry>, registryService_);
-        DECLARE_SHARED_SERVICE(std::shared_ptr<controller::Controller>, controller_);
+    
+        Hypodermic::ContainerBuilder builder_;
+        std::shared_ptr<Hypodermic::Container> container_;
     };
 }

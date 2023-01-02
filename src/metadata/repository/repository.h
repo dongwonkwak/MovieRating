@@ -16,6 +16,4 @@ namespace metadata::repository
     private:
         std::map<std::string, model::Metadata> data_;
     };
-
-    //std::map<std::string, Metadata> data;
 }

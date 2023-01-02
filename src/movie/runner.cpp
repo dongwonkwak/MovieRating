@@ -1,10 +1,10 @@
 #include <spdlog/spdlog.h>
 #include <fmt/core.h>
 
-#include "config/service_provider.h"
 #include "config/config.h"
 #include "movie/runner.h"
 #include "movie/application.h"
+#include "movie/controller/controller.h"
 #include "movie/service/grpc/movie_service.h"
 #include "discovery/registry.h"
 
@@ -41,7 +41,7 @@ namespace movie
         }
 
         Application app(vm);
-        GET_SERVICE(std::shared_ptr<config::Config>, configService);
+        auto configService = app()->resolve<config::Config>();
         if (configService == nullptr)
         {
             std::cout << "configService is null. terminate program.";
@@ -51,9 +51,9 @@ namespace movie
             configService->get<std::string>("grpc.server.host"),
             configService->get<ushort>("grpc.server.port"));
         //spdlog::info(fmt::format("Movie Service Listening for requests at: {}", addr));
-        GET_SERVICE(std::shared_ptr<controller::Controller>, controller);
+        auto controller = app()->resolve<controller::Controller>();
         movie::service::grpc::MovieService server(controller, addr);
-        GET_SERVICE(std::shared_ptr<discovery::Registry>, registry);
+        auto registry = app()->resolve<discovery::Registry>();
         cppcoro::static_thread_pool thread_pool;
 
         auto serviceId = registry->GetServiceID();

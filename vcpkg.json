@@ -16,6 +16,7 @@
         "gtest",
         "libpqxx",
         "boost-program-options",
-        "yaml-cpp"
+        "yaml-cpp",
+        "hypodermic"
     ]
 }
