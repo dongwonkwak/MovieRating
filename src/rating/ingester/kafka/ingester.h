@@ -2,8 +2,7 @@
 
 #include "rating/model/rating.h"
 
-#include "kafka/KafkaConsumer.h"
-#include "common/expected.h"
+#include <cppkafka/cppkafka.h>
 
 #include <memory>
 #include <string>
@@ -15,14 +14,13 @@ namespace rating::ingester::kafka
     {
     public:
         static std::shared_ptr<Ingester> NewIngester(
-            const std::string& addr,
+            const std::string& brokers,
             const std::string& groupId,
             const std::string& topic);
-        auto Poll()
-        -> common::expected<std::vector<rating::model::RatingEvent>>;
+        void Poll(std::vector<rating::model::RatingEvent>& events);
     private:
-        Ingester(std::unique_ptr<::kafka::clients::consumer::KafkaConsumer> consumer) noexcept;
+        Ingester(std::unique_ptr<cppkafka::Consumer> consumer) noexcept;
     private:
-        std::unique_ptr<::kafka::clients::consumer::KafkaConsumer> consumer_;
+        std::unique_ptr<cppkafka::Consumer> consumer_;
     };
 }

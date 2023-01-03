@@ -12,6 +12,7 @@
         "grpc",
         "cppcoro",
         "librdkafka",
+        "cppkafka",
         "spdlog",
         "gtest",
         "libpqxx",

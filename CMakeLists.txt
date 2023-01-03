@@ -3,6 +3,9 @@ project(MovieRating)
 
 include(api/grpc_protobuf_generate.cmake)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+include(NoInSourceBuilds)
+
 add_subdirectory(src/common)
 add_subdirectory(src/config)
 add_subdirectory(src/discovery)

@@ -1,3 +1,4 @@
+#include <spdlog/spdlog.h>
 #include "rating/service/grpc/rating_service.h"
 #include "rating/controller/controller.h"
 #include "rating/repository/memory/memory.h"
@@ -9,7 +10,6 @@ using movie::GetAggregatedRatingResponse;
 using movie::PutRatingRequest;
 using movie::PutRatingResponse;
 
-#include <iostream>
 
 class RatingServiceImpl final : public movie::RatingService::Service
 {
@@ -86,6 +86,7 @@ namespace rating::service::grpc
         : controller_(controller)
         , addr_(addr)
     {
+        spdlog::info("[RatingService] Listening for requests at: {}", addr_);
         ::grpc::EnableDefaultHealthCheckService(true);
         ::grpc::reflection::InitProtoReflectionServerBuilderPlugin();
     }
@@ -97,8 +98,8 @@ namespace rating::service::grpc
     
     void RatingService::start()
     {
+        spdlog::info("[RatingService] start service");
         controller_->StartIngestion();
-        std::cout << "GrpcService start\n";
         ServerBuilder builder;
         RatingServiceImpl service(controller_);
         builder.AddListeningPort(addr_, ::grpc::InsecureServerCredentials());
@@ -113,7 +114,7 @@ namespace rating::service::grpc
     {
         if (server_)
         {
-            std::cout << "stop!!\n";
+            spdlog::info("[RatingService] stop service");
             server_->Shutdown();
             server_.release();
         }

@@ -46,21 +46,21 @@ namespace rating::controller
     void Controller::doIngestion(const std::stop_token& token)
     {
         bool done = false;
+        std::vector<rating::model::RatingEvent> events;
 
         while (!done)
         {
-            auto records = ingester_->Poll();
-            records
-                .map([&](const auto& record) {
-                    std::cout << record.size() << std::endl;
-                    for (const auto& r : record)
-                    {
-                        model::Rating rating;
-                        rating.userId = r.userId;
-                        rating.ratingValue = r.value;
-                        Put(r.recordId, r.recordType, rating);
-                    }
-                });
+            ingester_->Poll(events);
+            if (!events.empty())
+            {
+                for (const auto& event : events)
+                {
+                    model::Rating rating;
+                    rating.userId = event.userId;
+                    rating.ratingValue = event.value;
+                    Put(event.recordId, event.recordType, rating);
+                }
+            }
 
             if (token.stop_requested())
             {
@@ -76,9 +76,12 @@ namespace rating::controller
         {
             return;
         }
+        isStart_ = false;
 
         ingestThread_.request_stop();
-        ingestThread_.join();
-        isStart_ = false;
+        if (ingestThread_.joinable())
+        {
+            ingestThread_.join();
+        }
     }
 }

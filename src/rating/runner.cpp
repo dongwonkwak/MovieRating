@@ -38,13 +38,12 @@ namespace rating
         auto configService = app()->resolve<config::Config>();
         if (configService == nullptr)
         {
-            std::cout << "configService is null. terminate program.";
+            std::cerr << "configService is null. terminate program.";
             exit(-1);
         }
         auto addr = fmt::format("{}:{}", 
             configService->get<std::string>("grpc.server.host"),
             configService->get<ushort>("grpc.server.port"));
-        spdlog::info(fmt::format("Rating Service Listening for requests at: {}", addr));
         auto controller = app()->resolve<controller::Controller>();
         rating::service::grpc::RatingService server(controller, addr);
         auto registry = app()->resolve<discovery::Registry>();
