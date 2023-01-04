@@ -52,7 +52,7 @@ namespace rating::repository::postresql
         try
         {
             pqxx::result r{tx.exec(
-                fmt::format("INSERT INTO  ratings (record_id, record_type, user_id, value) VALUES ('{}','{}', '{}', {})", 
+                fmt::format("INSERT INTO ratings (record_id, record_type, user_id, value) VALUES ('{}', '{}', '{}', {})", 
                     recordId, recordType, rating.userId, rating.ratingValue)
             )};
         }

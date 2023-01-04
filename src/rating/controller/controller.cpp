@@ -46,7 +46,7 @@ namespace rating::controller
     void Controller::doIngestion(const std::stop_token& token)
     {
         bool done = false;
-        std::vector<rating::model::RatingEvent> events;
+        RatingEventSet events;
 
         while (!done)
         {

@@ -10,7 +10,7 @@ application:
       port: 8500
   kafka:
     consumer:
-      bootstrap-servers: localhost:8082
+      bootstrap-servers: localhost:9092,localhost:9093,localhost:9094
       group-id: movie-rating
     
 grpc:

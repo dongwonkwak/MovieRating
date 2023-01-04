@@ -17,26 +17,29 @@ add_library(${project_name}-lib
     ingester/kafka/ingester.cpp
 )
 
+include(CppKafka)
+addCppKafka(${project_name}-lib)
+
 find_package(cppcoro CONFIG REQUIRED)
 find_package(cpprestsdk CONFIG REQUIRED)
 find_package(Boost 1.81.0 COMPONENTS program_options)
 find_package(spdlog CONFIG REQUIRED)
 find_package(libpqxx CONFIG REQUIRED)
+find_path(HYPODERMIC_INCLUDE_DIRS "Hypodermic/ActivatedRegistrationInfo.h")
 
 target_link_libraries(${project_name}-lib PRIVATE 
     cpprestsdk::cpprest 
     config
     spdlog::spdlog
     ${Boost_LIBRARIES}
-    ${CPPKAFKA_LIBRARY} RdKafka::rdkafka++
     libpqxx::pqxx
     discovery
     cppcoro
     proto-object
     common)
+
 target_include_directories(${project_name}-lib PRIVATE 
     ${HYPODERMIC_INCLUDE_DIRS}
-    ${CPPKAFKA_INCLUDE_DIR}
 )
 
 add_executable(${project_name} runner.cpp main.cpp)
@@ -44,6 +47,5 @@ add_executable(${project_name} runner.cpp main.cpp)
 target_link_libraries(${project_name} ${project_name}-lib fmt::fmt spdlog::spdlog)
 add_dependencies(${project_name} ${project_name}-lib)
 
-find_package(GTest REQUIRED)
-enable_testing()
+
 add_subdirectory(tests)

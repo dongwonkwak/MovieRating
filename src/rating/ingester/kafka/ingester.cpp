@@ -54,7 +54,8 @@ using namespace cppkafka;
         const Configuration config = {
             { "metadata.broker.list", brokers},
             { "group.id", groupId },
-            { "enable.auto.commit", false }
+            { "enable.auto.commit", false },
+            { "auto.offset.reset", "earliest" }
         };
         spdlog::info("Create new Ingester");
         spdlog::info("broker.list: {}", brokers);
@@ -67,7 +68,7 @@ using namespace cppkafka;
         return ingester;
     }
 
-    void Ingester::Poll(std::vector<rating::model::RatingEvent>& events)
+    void Ingester::Poll(RatingEventSet& events)
     {
         events.clear();
         Message msg = consumer_->poll(std::chrono::milliseconds(1000));
@@ -85,7 +86,8 @@ using namespace cppkafka;
             {
                 parseRatingEvents(msg.get_payload())
                     .map([&](const auto& r) {
-                        events.insert(events.begin(), r.begin(), r.end());
+                        std::copy(std::begin(r), std::end(r),
+                                    std::inserter(events, std::end(events)));
                     });
             }
         }

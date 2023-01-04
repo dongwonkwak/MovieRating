@@ -5,13 +5,14 @@
 
 #include <string>
 #include <vector>
-
+#include <unordered_set>
 namespace rating::model
 {
+    // key = recordId + recordType
     struct Rating
     {
-        std::string recordId;       // key1
-        std::string recordType;     // key2
+        std::string recordId;
+        std::string recordType;
         std::string userId;
         double ratingValue;
 
@@ -75,6 +76,7 @@ namespace rating::model
         return res;
     }
 
+    // key = recordId + recordType
     struct RatingEvent
     {
         std::string userId;
@@ -109,5 +111,25 @@ namespace rating::model
 
             return res;
         }
+
+        bool operator==(const RatingEvent& other) const
+        {
+            return ((recordId == other.recordId) && (recordType == other.recordType));
+        }
+
+        bool operator!=(const RatingEvent& other) const
+        {
+            return !(*this == other);
+        }
+    };
+
+    struct RatingEventHash
+    {
+        size_t operator()(const RatingEvent& e) const
+        {
+            return (std::hash<std::string>()(e.recordId)) ^ (std::hash<std::string>()(e.recordType));
+        }
     };
 }
+
+using RatingEventSet = std::unordered_set<rating::model::RatingEvent, rating::model::RatingEventHash>;

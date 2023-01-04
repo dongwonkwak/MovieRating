@@ -17,7 +17,7 @@ namespace rating::ingester::kafka
             const std::string& brokers,
             const std::string& groupId,
             const std::string& topic);
-        void Poll(std::vector<rating::model::RatingEvent>& events);
+        void Poll(RatingEventSet& events);
     private:
         Ingester(std::unique_ptr<cppkafka::Consumer> consumer) noexcept;
     private:
