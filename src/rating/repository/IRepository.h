@@ -17,7 +17,7 @@ namespace rating::repository
 
         virtual ~IRepository() = default;
         virtual auto Get(const RecordID& recordID, const RecordType& recordType)
-            -> common::expected<std::vector<common::expected<model::Rating>>> = 0;
+            -> common::expected<RatingSet> = 0;
         virtual void Put(const RecordID& recordId, const RecordType& recordType, const model::Rating& rating) = 0;
     };
 }

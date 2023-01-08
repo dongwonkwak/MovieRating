@@ -41,7 +41,7 @@ namespace rating::service::http
         double sum = 0.0;
         for (const auto& e : v.value())
         {
-            sum += e->ratingValue;
+            sum += e.ratingValue;
         }
         double avg = (sum / v.value().size());
 

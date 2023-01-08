@@ -1,3 +1,4 @@
+#include <spdlog/spdlog.h>
 #include "rating/controller/controller.h"
 #include "rating/repository/memory/memory.h"
 #include "rating/ingester/kafka/ingester.h"
@@ -5,8 +6,8 @@
 namespace rating::controller
 {
     Controller::Controller(
-        const std::shared_ptr<rating::repository::IRepository>& repository,
-        const std::shared_ptr<rating::ingester::kafka::Ingester>& ingester)
+        std::shared_ptr<rating::repository::IRepository> repository,
+        std::shared_ptr<rating::ingester::kafka::Ingester> ingester)
         : repository_(repository)
         , ingester_(ingester)
     {
@@ -19,7 +20,7 @@ namespace rating::controller
     }
 
     auto Controller::Get(const RecordID& recordID, const RecordType& recordType)
-        -> common::expected<std::vector<common::expected<model::Rating>>> 
+        -> common::expected<RatingSet> 
     {
         return repository_->Get(recordID, recordType);
     }
@@ -53,11 +54,13 @@ namespace rating::controller
             ingester_->Poll(events);
             if (!events.empty())
             {
+                spdlog::info("[Controller::doIngestion] got event");
                 for (const auto& event : events)
                 {
                     model::Rating rating;
                     rating.userId = event.userId;
                     rating.ratingValue = event.value;
+                    rating.recordId = event.recordId;
                     Put(event.recordId, event.recordType, rating);
                 }
             }

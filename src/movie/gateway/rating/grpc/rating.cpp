@@ -1,5 +1,6 @@
 #include <fmt/core.h>
 #include <fmt/std.h>
+#include <spdlog/spdlog.h>
 
 #include "movie/gateway/rating/grpc/rating.h"
 #include "movie/grpcutil/grpcutil.h"
@@ -41,6 +42,28 @@ public:
         return common::unexpected{fmt::format("error code: {}, {}", 
             status.error_code(), status.error_message())};
     }
+
+    void PutRating(const std::string& recordID, const std::string& recordType, const ::rating::model::Rating& rating)
+    {
+        ClientContext context;
+        PutRatingRequest request;
+        PutRatingResponse response;
+        request.set_record_id(recordID);
+        request.set_record_type(recordType);
+        request.set_user_id(rating.userId);
+        request.set_rating_value(rating.ratingValue);
+
+        auto status = stub_->PutRating(&context, request, &response);
+        
+        if (status.ok())
+        {
+            spdlog::info("[RatingGateway] Success to PutRating");
+        }
+        else
+        {
+            spdlog::error("[RatingGateway] Fail to PutRating operation");
+        }
+    }
 private:
     std::unique_ptr<movie::RatingService::Stub> stub_;
 };
@@ -77,5 +100,16 @@ namespace movie::gateway::rating::grpc
                     const std::string& recordType, 
                     const ::rating::model::Rating& rating)
     {
+        if (recordID.empty() || recordType.empty())
+        {
+            spdlog::error("[RatingGateway::PutRating]record ID or record type is empty");
+            return;
+        }
+
+        grpcutil::ServiceConnection("rating", registry_)
+            .map([=](auto conn) {
+                RatingServiceClient client(conn);
+                client.PutRating(recordID, recordType, rating);
+            });
     }
 }

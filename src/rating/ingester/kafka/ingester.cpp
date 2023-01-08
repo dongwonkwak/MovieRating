@@ -4,7 +4,7 @@
 #include <cpprest/json.h>
 #include "cppcoro/on_scope_exit.hpp"
 
-
+#include "config/config.h"
 namespace rating::ingester::kafka
 {
     static auto parseRatingEvents(const std::string& line)
@@ -68,6 +68,25 @@ using namespace cppkafka;
         return ingester;
     }
 
+    Ingester::Ingester(const std::shared_ptr<config::Config>& config)
+    {
+        auto kafkaHost = config->get<std::string>("application.kafka.consumer.bootstrap-servers");
+        auto groupId = config->get<std::string>("application.kafka.consumer.group-id");
+        const std::string topic = "ratings";
+
+        const Configuration configuration = {
+            { "metadata.broker.list", kafkaHost},
+            { "group.id", groupId }
+        };
+        spdlog::info("Create new Ingester");
+        spdlog::info("broker.list: {}", kafkaHost);
+        spdlog::info("group.id: {}", groupId);
+        spdlog::info("topic: {}", topic);
+
+        consumer_ = std::make_unique<Consumer>(configuration);
+        consumer_->subscribe({topic});
+    }
+
     void Ingester::Poll(RatingEventSet& events)
     {
         events.clear();
@@ -89,6 +108,7 @@ using namespace cppkafka;
                         std::copy(std::begin(r), std::end(r),
                                     std::inserter(events, std::end(events)));
                     });
+                consumer_->commit(msg);
             }
         }
     }

@@ -22,12 +22,12 @@ namespace rating::controller
         using RecordID = std::string;
         using RecordType = std::string;
     public:
-        explicit Controller(
-            const std::shared_ptr<rating::repository::IRepository>& repository,
-            const std::shared_ptr<rating::ingester::kafka::Ingester>& ingester);
+        Controller(
+            std::shared_ptr<rating::repository::IRepository> repository,
+            std::shared_ptr<rating::ingester::kafka::Ingester> ingester);
         ~Controller();
         auto Get(const RecordID& recordID, const RecordType& recordType)
-            -> common::expected<std::vector<common::expected<model::Rating>>>;
+            -> common::expected<RatingSet>;
         void Put(const RecordID& recordId, const RecordType& recordType, const model::Rating& rating);
         void StartIngestion();
         void Stop();

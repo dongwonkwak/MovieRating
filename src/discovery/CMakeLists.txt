@@ -14,4 +14,5 @@ target_link_libraries(discovery PRIVATE
     fmt::fmt
     range-v3
     common
+    config
     ppconsul)

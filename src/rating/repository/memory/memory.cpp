@@ -4,9 +4,9 @@ namespace rating::repository::memory
 {
 
     auto Repository::Get(const RecordID& recordID, const RecordType& recordType)
-        -> common::expected<std::vector<common::expected<model::Rating>>>
+        -> common::expected<RatingSet>
     {
-        std::vector<common::expected<model::Rating>> res;
+        RatingSet res;
 
         auto found1 = repository_.find(recordID);
         if (found1 == repository_.end())
@@ -19,7 +19,8 @@ namespace rating::repository::memory
             return common::unexpected{"recordType not found"};
         }
         
-        std::copy(found2->second.begin(), found2->second.end(), std::back_inserter(res));
+        std::copy(std::begin(found2->second), std::end(found2->second), 
+            std::inserter(res, std::end(res)));
 
         return res;
     }

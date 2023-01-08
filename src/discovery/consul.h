@@ -1,6 +1,7 @@
 #pragma once
 
 #include "discovery/registry.h"
+#include "config/config.h"
 #include <ppconsul/agent.h>
 #include <ppconsul/health.h>
 #include <common/expected.h>
@@ -16,6 +17,7 @@ namespace discovery
             const std::string& endpoint = "http://127.0.0.1:8500", 
             size_t ttl = 5) noexcept;
         
+        ConsulRegistry(const std::shared_ptr<config::Config>& config);
         ~ConsulRegistry();
 
         void Register(const std::string& serviceId, const std::string& serviceName, const std::string& hostPort) override;

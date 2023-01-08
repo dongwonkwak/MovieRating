@@ -48,59 +48,29 @@ namespace rating
 
         builder_.registerInstance(configService);
 
-        CreateRegistry();   
-        CreateController();
+        RegisterRegistry();   
+        RegisterController();
 
         container_ = builder_.build();
     }
     
 
-    void Application::CreateRegistry()
+    void Application::RegisterRegistry()
     {
-        builder_.registerInstanceFactory([](Hypodermic::ComponentContext& context){
-            auto configService = context.resolve<config::Config>();
-            auto serviceName = configService->get<std::string>("application.name");
-            auto serviceId = discovery::GenerateServiceID(serviceName);
-            std::string consulAddr = "http://localhost:8500";
-            ushort hostPort = 8082;
-
-            try
-            {
-                consulAddr = fmt::format("http://{}:{}", 
-                    configService->get<std::string>("application.cloud.consul.host"),
-                    configService->get<ushort>("application.cloud.consul.port"));
-                hostPort = configService->get<ushort>("grpc.server.port");
-            }
-            catch(const std::exception& e)
-            {
-                spdlog::error(e.what());
-            }
-
-            spdlog::info(fmt::format("Consul address: {}", consulAddr));
-
-            auto r = discovery::ConsulRegistry::Create(consulAddr);
-            r->Register(
-                serviceId,
-                serviceName,
-                std::to_string(hostPort));
-            return r;
-        });   
+        builder_.registerType<discovery::ConsulRegistry>()
+                .with<config::Config>([](Hypodermic::ComponentContext& context) {
+                    return context.resolve<config::Config>();
+                })
+                .as<discovery::Registry>();
     }
 
-    void Application::CreateController()
+    void Application::RegisterController()
     {
         builder_.registerInstanceFactory([](Hypodermic::ComponentContext& context) {
             auto configService = context.resolve<config::Config>();
-            auto connectString = 
-                fmt::format("postgresql://{}:{}@{}",
-                            configService->get<std::string>("application.datasource.user"),
-                            configService->get<std::string>("application.datasource.password"),
-                            configService->get<std::string>("application.datasource.url"));
-            auto repository = std::make_shared<repository::postresql::Repository>(connectString);
-            auto kafkaHost = configService->get<std::string>("application.kafka.consumer.bootstrap-servers");
-            auto groupId = configService->get<std::string>("application.kafka.consumer.group-id");
-            const std::string topic = "ratings";
-            auto ingester = ingester::kafka::Ingester::NewIngester(kafkaHost, groupId, topic);
+            auto repository = std::make_shared<repository::postresql::Repository>(configService);
+            auto ingester = std::make_shared<ingester::kafka::Ingester>(configService);
+
             return std::make_shared<controller::Controller>(repository, ingester);
         });
     }

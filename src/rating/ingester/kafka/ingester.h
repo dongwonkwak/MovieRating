@@ -8,6 +8,11 @@
 #include <string>
 #include <vector>
 
+namespace config
+{
+    class Config;
+}
+
 namespace rating::ingester::kafka
 {
     class Ingester
@@ -17,6 +22,7 @@ namespace rating::ingester::kafka
             const std::string& brokers,
             const std::string& groupId,
             const std::string& topic);
+        Ingester(const std::shared_ptr<config::Config>& config);
         void Poll(RatingEventSet& events);
     private:
         Ingester(std::unique_ptr<cppkafka::Consumer> consumer) noexcept;

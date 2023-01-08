@@ -11,47 +11,27 @@
 
 auto parseRatings(const std::string& inp) -> std::vector<rating::model::RatingEvent>;
 
-template <typename ConsumerType>
-class ConsumerRunner
+template <typename Service>
+class ServiceRunner
 {
 public:
-    ConsumerRunner(ConsumerType& consumer)
-        : consumer_(consumer)
+    ServiceRunner(Service& service)
+        : service_(service)
     {
-        thread_ = std::jthread([&](const std::stop_token& token){
-            RatingEventSet ret;
-
-            while (true)
-            {
-                consumer_->Poll(ret);
-                if (!ret.empty())
-                {
-                    std::copy(std::begin(ret), std::end(ret),
-                            std::inserter(events_, std::end(events_)));
-                }
-
-                if (token.stop_requested())
-                {
-                    break;
-                }
-            }
+        thread_ = std::jthread([&]{
+            service_->start();
         });
-    }
-    const RatingEventSet& get_events() const
-    {
-        return events_;
     }
 
     void try_join()
     {
-        thread_.request_stop();
+        service_->stop();
         if (thread_.joinable())
         {
             thread_.join();
         }
     }
 private:
-    ConsumerType& consumer_;
-    RatingEventSet events_;
+    Service& service_;
     std::jthread thread_;
 };

@@ -1,5 +1,6 @@
 #include "discovery/consul.h"
 using namespace ppconsul::agent;
+#include <spdlog/spdlog.h>
 
 #include <fmt/core.h>
 #include <range/v3/all.hpp>
@@ -10,6 +11,32 @@ namespace discovery
     {
         auto registry = std::shared_ptr<ConsulRegistry>(new ConsulRegistry(endpoint, ttl));
         return registry;
+    }
+
+    ConsulRegistry::ConsulRegistry(const std::shared_ptr<config::Config>& config)
+    {
+        auto serviceName = config->get<std::string>("application.name");
+        auto serviceId = discovery::GenerateServiceID(serviceName);
+        std::string consulAddr = "http://localhost:8500";
+        ushort hostPort = 8082;
+
+        try
+        {
+            consulAddr = fmt::format("http://{}:{}", 
+                config->get<std::string>("application.cloud.consul.host"),
+                config->get<ushort>("application.cloud.consul.port"));
+            hostPort = config->get<ushort>("grpc.server.port");
+        }
+        catch (const std::exception& e)
+        {
+            spdlog::error(e.what());
+        }
+        consul_ = std::make_unique<ppconsul::Consul>(consulAddr);
+        health_ = std::make_unique<ppconsul::health::Health>(*consul_);
+        agent_ = std::make_unique<ppconsul::agent::Agent>(*consul_);
+        ttl_ = 5;
+
+        this->Register(serviceId, serviceName, std::to_string(hostPort));
     }
 
     ConsulRegistry::ConsulRegistry(const std::string& endpoint, size_t ttl)

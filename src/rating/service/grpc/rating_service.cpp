@@ -34,6 +34,7 @@ private:
         auto v = controller_->Get(request->record_id(), request->record_type());
         if (!v.has_value() || v.value().empty())
         {
+            spdlog::error(v.error());
             return Status(
                 grpc::StatusCode::NOT_FOUND,
                 "not found");
@@ -41,7 +42,7 @@ private:
         double sum = 0.0;
         for (const auto& e : v.value())
         {
-            sum += e->ratingValue;
+            sum += e.ratingValue;
         }
         double avg = (sum / v.value().size());
 
@@ -68,10 +69,12 @@ private:
         result.recordType = request->record_type();
         result.userId = request->user_id();
         result.ratingValue = request->rating_value();
+        spdlog::info("[RatingService::PutRating] record ID: {}, record type: {}, user ID: {}, rating: {}",
+            request->record_id(), request->record_type(), request->user_id(), request->rating_value());
 
         controller_->Put(
             request->record_id(), 
-            request->user_id(), 
+            request->record_type(), 
             result);
 
         return Status::OK;

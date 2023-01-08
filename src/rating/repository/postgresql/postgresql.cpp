@@ -1,5 +1,8 @@
+#include <spdlog/spdlog.h>
 #include <fmt/core.h>
+
 #include "rating/repository/postgresql/postgresql.h"
+#include "config/config.h"
 
 namespace rating::repository::postresql
 {
@@ -9,11 +12,26 @@ namespace rating::repository::postresql
 
     }
 
+    Repository::Repository(std::string_view host, unsigned short port, std::string_view dbname, std::string_view user, std::string_view password)
+    {
+        conn_ = std::make_unique<::pqxx::connection>(fmt::format("host={} port={} dbname={} user={} password={}", host, port, dbname, user, password));
+    }
+
+    Repository::Repository(const std::shared_ptr<config::Config>& config)
+    {
+        auto connectString = 
+                fmt::format("postgresql://{}:{}@{}",
+                    config->get<std::string>("application.datasource.user"),
+                    config->get<std::string>("application.datasource.password"),
+                    config->get<std::string>("application.datasource.url"));
+        conn_ = std::make_unique<::pqxx::connection>(connectString);
+    }
+
     auto Repository::Get(const RecordID& recordID, const RecordType& recordType)
-        -> common::expected<std::vector<common::expected<model::Rating>>>
+        -> common::expected<RatingSet>
     {
         pqxx::work tx{*conn_};
-        std::vector<common::expected<model::Rating>> res;
+        RatingSet res;
 
         try
         {
@@ -29,8 +47,8 @@ namespace rating::repository::postresql
                 rating.ratingValue = row[1].as<int>();
                 rating.recordId = recordID;
                 rating.recordType = recordType;
-                 
-                res.emplace_back(rating);
+                res.insert(rating);
+                //res.emplace_back(rating);
             }
 
             tx.commit();
@@ -51,10 +69,12 @@ namespace rating::repository::postresql
         pqxx::work tx{*conn_};
         try
         {
-            pqxx::result r{tx.exec(
-                fmt::format("INSERT INTO ratings (record_id, record_type, user_id, value) VALUES ('{}', '{}', '{}', {})", 
-                    recordId, recordType, rating.userId, rating.ratingValue)
-            )};
+            auto query = fmt::format("INSERT INTO ratings (record_id, record_type, user_id, value) VALUES ('{}', '{}', '{}', {})",
+                recordId, recordType, rating.userId, rating.ratingValue);
+            spdlog::info("[Repository::Put] {}", query);
+
+            tx.exec(query);
+            tx.commit();
         }
         catch (const pqxx::sql_error& e)
         {

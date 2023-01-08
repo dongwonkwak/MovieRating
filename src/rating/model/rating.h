@@ -58,6 +58,24 @@ namespace rating::model
 
             return result;
         }
+
+        bool operator==(const Rating& other) const
+        {
+            return ((recordId == other.recordId) && (recordType == other.recordType));
+        }
+
+        bool operator!=(const Rating& other) const
+        {
+            return !(*this == other);
+        }
+    };
+
+    struct RatingHash
+    {
+        size_t operator()(const Rating& e) const
+        {
+            return (std::hash<std::string>()(e.recordId)) ^ (std::hash<std::string>()(e.recordType));
+        }
     };
 
     constexpr std::string_view RecordTypeMovie = "movie";
@@ -133,3 +151,4 @@ namespace rating::model
 }
 
 using RatingEventSet = std::unordered_set<rating::model::RatingEvent, rating::model::RatingEventHash>;
+using RatingSet = std::unordered_set<rating::model::Rating, rating::model::RatingHash>;
