@@ -85,6 +85,9 @@ namespace movie::service::grpc
     {
         spdlog::info("GrpcService is stopped");
         thread_.request_stop();
-        thread_.join();
+        if (thread_.joinable())
+        {
+            thread_.join();
+        }
     }
 }

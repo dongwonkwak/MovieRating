@@ -28,8 +28,6 @@ namespace movie::controller
             .map([&](auto rating) {
                 details.rating = rating;
                 return details;
-            })
-            .map_error([](auto e) { return unexpected{"can't find id"}; })
-            .value();
+            });
     }
 }

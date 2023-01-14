@@ -91,8 +91,8 @@ namespace movie::gateway::rating::grpc
                     RatingServiceClient client(conn);
                     return client.GetAggretatedRating(recordID, recordType);
                 })
-                .map_error([](auto e) { return common::unexpected{"there is no rating service"}; })
-                .value();
+                .map_error([](auto e) { spdlog::error("[RatingGateway] there is no rating service"); })
+                .value_or(0.0f);
     }
 
     void RatingGateway::PutRating(

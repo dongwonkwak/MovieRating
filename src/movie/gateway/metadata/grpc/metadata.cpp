@@ -73,8 +73,6 @@ namespace movie::gateway::metadata::grpc
             })
             .map([=](auto resp) {
                 return ::metadata::model::Metadata::MetadataFromProto(resp);
-            })
-            .map_error([](auto e) { return common::unexpected{"here is no metadata service"}; })
-            .value();
+            });
     }
 }

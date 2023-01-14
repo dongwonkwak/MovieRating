@@ -15,8 +15,8 @@ TEST(ServiceTest, Run)
 {
     TestApplication app;
     auto controller = app()->resolve<rating::controller::Controller>();
-    auto service = std::make_shared<rating::service::grpc::RatingService>(controller, RATING_GRPC_ENDPOINT);
-    ServiceRunner runner(service);
+    auto service = std::make_shared<rating::service::grpc::RatingService>(controller);
+    ServiceRunner runner(service, RATING_GRPC_ENDPOINT);
     auto registry = app()->resolve<discovery::Registry>();
     auto serviceId = registry->GetServiceID();
     registry->ReportHealthyState(serviceId);

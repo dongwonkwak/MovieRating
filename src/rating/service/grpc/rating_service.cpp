@@ -85,11 +85,9 @@ private:
 
 namespace rating::service::grpc
 {
-    RatingService::RatingService(const std::shared_ptr<rating::controller::Controller>& controller, const std::string &addr)
+    RatingService::RatingService(std::shared_ptr<rating::controller::Controller> controller)
         : controller_(controller)
-        , addr_(addr)
     {
-        spdlog::info("[RatingService] Listening for requests at: {}", addr_);
         ::grpc::EnableDefaultHealthCheckService(true);
         ::grpc::reflection::InitProtoReflectionServerBuilderPlugin();
     }
@@ -99,13 +97,14 @@ namespace rating::service::grpc
         stop();
     }
     
-    void RatingService::start()
+    void RatingService::start(const std::string& addr)
     {
         spdlog::info("[RatingService] start service");
+        spdlog::info("[RatingService] Listening for requests at: {}", addr);
         controller_->StartIngestion();
         ServerBuilder builder;
         RatingServiceImpl service(controller_);
-        builder.AddListeningPort(addr_, ::grpc::InsecureServerCredentials());
+        builder.AddListeningPort(addr, ::grpc::InsecureServerCredentials());
         builder.RegisterService(&service);
 
         server_ = std::unique_ptr<Server>(builder.BuildAndStart());

@@ -48,46 +48,23 @@ namespace metadata
 
         builder_.registerInstance(configService);
 
-        CreateRegistry();   
-        CreateController();
+        RegisterRegistry();   
+        RegisterController();
 
         container_ = builder_.build();
     }
     
 
-    void Application::CreateRegistry()
+    void Application::RegisterRegistry()
     {
-        builder_.registerInstanceFactory([](Hypodermic::ComponentContext& context){
-            auto configService = context.resolve<config::Config>();
-            auto serviceName = configService->get<std::string>("application.name");
-            auto serviceId = discovery::GenerateServiceID(serviceName);
-            std::string consulAddr = "http://localhost:8500";
-            ushort hostPort = 8081;
-
-            try
-            {
-                consulAddr = fmt::format("http://{}:{}", 
-                    configService->get<std::string>("application.cloud.consul.host"),
-                    configService->get<ushort>("application.cloud.consul.port"));
-                hostPort = configService->get<ushort>("grpc.server.port");
-            }
-            catch(const std::exception& e)
-            {
-                spdlog::error(e.what());
-            }
-
-            spdlog::info(fmt::format("Consul address: {}", consulAddr));
-
-            auto r = discovery::ConsulRegistry::Create(consulAddr);
-            r->Register(
-                serviceId,
-                serviceName,
-                std::to_string(hostPort));
-            return r;
-        });
+       builder_.registerType<discovery::ConsulRegistry>()
+                .with<config::Config>([](Hypodermic::ComponentContext& context) {
+                    return context.resolve<config::Config>();
+                })
+                .as<discovery::Registry>();
     }
 
-    void Application::CreateController()
+    void Application::RegisterController()
     {
         builder_.registerInstanceFactory([](Hypodermic::ComponentContext& context) {
             auto repository = std::make_shared<repository::Repository>();

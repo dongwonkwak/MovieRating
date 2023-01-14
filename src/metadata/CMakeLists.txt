@@ -4,9 +4,6 @@ set(CMAKE_CXX_STANDARD 20)
 
 project(${project_name} LANGUAGES CXX)
 
-include_directories(../)
-include_directories(${CMAKE_BINARY_DIR})
-
 add_library(${project_name}-lib 
     application.cpp
     controller/controller.cpp
@@ -21,7 +18,7 @@ find_package(Boost 1.81.0 COMPONENTS program_options)
 find_package(spdlog CONFIG REQUIRED)
 find_path(HYPODERMIC_INCLUDE_DIRS "Hypodermic/ActivatedRegistrationInfo.h")
 
-target_link_libraries(${project_name}-lib PRIVATE 
+target_link_libraries(${project_name}-lib PUBLIC 
     cpprestsdk::cpprest 
     config
     spdlog::spdlog
@@ -30,9 +27,16 @@ target_link_libraries(${project_name}-lib PRIVATE
     cppcoro
     proto-object
     common)
-target_include_directories(${project_name}-lib PRIVATE ${HYPODERMIC_INCLUDE_DIRS})
+
+target_include_directories(${project_name}-lib PUBLIC 
+    ${HYPODERMIC_INCLUDE_DIRS}
+    ${CMAKE_BINARY_DIR}
+    ../
+)
 
 add_executable(${project_name} runner.cpp main.cpp)
 
 target_link_libraries(${project_name} ${project_name}-lib fmt::fmt spdlog::spdlog)
 add_dependencies(${project_name} ${project_name}-lib)
+
+add_subdirectory(tests)

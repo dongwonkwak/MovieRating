@@ -44,8 +44,7 @@ namespace rating
         auto addr = fmt::format("{}:{}", 
             configService->get<std::string>("grpc.server.host"),
             configService->get<ushort>("grpc.server.port"));
-        auto controller = app()->resolve<controller::Controller>();
-        rating::service::grpc::RatingService server(controller, addr);
+        auto server = app()->resolve<rating::service::grpc::RatingService>();
         auto registry = app()->resolve<discovery::Registry>();
         cppcoro::static_thread_pool thread_pool;
 
@@ -70,7 +69,7 @@ namespace rating
             }(),
             [&]() -> cppcoro::task<>
             {
-                server.start();
+                server->start(addr);
                 co_return;
             }()
         ));

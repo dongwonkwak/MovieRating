@@ -31,18 +31,21 @@ private:
                 grpc::StatusCode::INVALID_ARGUMENT, 
                 "request is null or empty id");
         }
-        auto id = controller_->Get(request->movie_id());
-        if (!id.has_value())
-        {
-            return Status(
-                grpc::StatusCode::NOT_FOUND,
-                "not found");
-        }
 
-        auto result = id->MetadataToProto();
-        response->mutable_metadata()->CopyFrom(result);
+        return controller_->Get(request->movie_id())
+            .map([=](auto id) {
+                auto result = id.MetadataToProto();
+                response->mutable_metadata()->CopyFrom(result);
 
-        return Status::OK;
+                return Status::OK;
+            })
+            .map_error([=](auto e) {
+                spdlog::error("[MetadataServiceImpl::GetMetadata] {} not found", 
+                    request->movie_id());
+            })
+            .value_or(Status(
+                    grpc::StatusCode::NOT_FOUND,
+                    "not found"));
     }
 
     Status PutMetadata(

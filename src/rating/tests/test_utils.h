@@ -15,11 +15,11 @@ template <typename Service>
 class ServiceRunner
 {
 public:
-    ServiceRunner(Service& service)
+    ServiceRunner(Service& service, const std::string& addr)
         : service_(service)
     {
         thread_ = std::jthread([&]{
-            service_->start();
+            service_->start(addr);
         });
     }
 

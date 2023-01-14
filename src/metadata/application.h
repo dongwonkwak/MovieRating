@@ -13,8 +13,8 @@ namespace metadata
 
         std::shared_ptr<Hypodermic::Container> operator()();
     private:
-        void CreateRegistry();
-        void CreateController();
+        void RegisterRegistry();
+        void RegisterController();
     
         Hypodermic::ContainerBuilder builder_;
         std::shared_ptr<Hypodermic::Container> container_;

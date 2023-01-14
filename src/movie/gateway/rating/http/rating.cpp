@@ -1,3 +1,4 @@
+#include "spdlog/spdlog.h"
 #include "movie/gateway/rating/http/rating.h"
 
 using namespace web::http;
@@ -48,12 +49,12 @@ namespace movie::gateway::rating::http
         auto addrs = registry_->ServiceAddress("rating");
         for (const auto& addr : addrs.value())
         {
-            std::cout << addr << std::endl;
+            spdlog::info("{}", addr);
         }
         if (addrs->empty())
         {
+            spdlog::error("can't find service");
             return;
-            //return common::unexpected{"can't find service"};
         }
 
         http_client client(web::http::uri_builder(addrs.value()[0]).append(U("/rating")).to_uri());
@@ -63,6 +64,5 @@ namespace movie::gateway::rating::http
             << U("&userId=") << rating.userId
             << U("&value=") << rating.ratingValue;
         client.request(methods::PUT, buf.str()).get();
-        //auto response = client_.request(methods::PUT, buf.str()).get();
     }
 }

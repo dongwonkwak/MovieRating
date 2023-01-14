@@ -23,16 +23,13 @@ if (NOT RATING_POSTGRESQL_CONNECTION_URL)
     set(RATING_POSTGRESQL_CONNECTION_URL "postgresql://postgres:postgres@localhost:5432/movie_db" CACHE STRING "postgresql connection string")
 endif()
 
-if (NOT RATING_CONSUL_ENDPOINT)
-    set(RATING_CONSUL_ENDPOINT "http://127.0.0.1:8500" CACHE STRING "The consul instance where to connect to run tests")
+if (NOT MOVIE_RATING_CONSUL_ENDPOINT)
+    set(MOVIE_RATING_CONSUL_ENDPOINT "http://127.0.0.1:8500" CACHE STRING "The consul instance where to connect to run tests")
 endif()
 
 if (NOT RATING_GRPC_ENDPOINT)
     set(RATING_GRPC_ENDPOINT "localhost:8082" CACHE STRING "Grpc service endpoint")
 endif()
-
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 add_definitions(
     "-DKAFKA_TEST_INSTANCE=\"${KAFKA_TEST_INSTANCE}\""
@@ -40,13 +37,18 @@ add_definitions(
     "-DKAFKA_TOPIC=\"${KAFKA_TOPIC}\""
     "-DKAFKA_GROUP_ID=\"${KAFKA_GROUP_ID}\""
     "-DRATING_POSTGRESQL_CONNECTION_URL=\"${RATING_POSTGRESQL_CONNECTION_URL}\""
-    "-DRATING_CONSUL_ENDPOINT=\"${RATING_CONSUL_ENDPOINT}\""
+    "-DMOVIE_RATING_CONSUL_ENDPOINT=\"${MOVIE_RATING_CONSUL_ENDPOINT}\""
     "-DRATING_GRPC_ENDPOINT=\"${RATING_GRPC_ENDPOINT}\""
 )
 
 set(SOURCES rating_service_tests.cpp test_utils.cpp test_application.cpp)
 
 add_executable(${project_name} ${SOURCES})
+target_include_directories(${project_name} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
 include(Testing)
 AddTests(${project_name})
 

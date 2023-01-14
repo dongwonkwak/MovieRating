@@ -18,8 +18,6 @@ namespace movie::grpcutil
                 return grpc::CreateChannel(
                     addrs[rand() % addrs.size()],
                     grpc::InsecureChannelCredentials());
-            })
-            .map_error([=](auto e) { common::unexpected{fmt::format("can't find [{}] service.", serviceName)}; })
-            .value();
+            });
     }
 }
