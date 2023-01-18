@@ -58,17 +58,17 @@ namespace rating::model
 
             return result;
         }
-
-        bool operator==(const Rating& other) const
-        {
-            return ((recordId == other.recordId) && (recordType == other.recordType));
-        }
-
-        bool operator!=(const Rating& other) const
-        {
-            return !(*this == other);
-        }
     };
+
+    inline bool operator==(const Rating& r1, const Rating& r2)
+    {
+        return ((r1.recordId == r2.recordId) && (r1.recordType == r2.recordType));
+    }
+
+    inline bool operator!=(const Rating& r1, const Rating& r2)
+    {
+        return !(r1 == r2);
+    }
 
     struct RatingHash
     {
@@ -102,7 +102,7 @@ namespace rating::model
         std::string recordType;
         int value;
         std::string providerId;
-        std::string eventType;
+        std::string eventType;  // put or delete
 
         static RatingEvent FromJSON(web::json::value object)
         {
@@ -129,17 +129,17 @@ namespace rating::model
 
             return res;
         }
-
-        bool operator==(const RatingEvent& other) const
-        {
-            return ((recordId == other.recordId) && (recordType == other.recordType));
-        }
-
-        bool operator!=(const RatingEvent& other) const
-        {
-            return !(*this == other);
-        }
     };
+
+    inline bool operator==(const RatingEvent& e1, const RatingEvent& e2)
+    {
+        return ((e1.recordId == e2.recordId) && (e1.recordType == e2.recordType));
+    }
+
+    inline bool operator!=(const RatingEvent& e1, const RatingEvent& e2)
+    {
+        return !(e1 == e2);
+    }
 
     struct RatingEventHash
     {

@@ -48,7 +48,6 @@ namespace rating::repository::postresql
                 rating.recordId = recordID;
                 rating.recordType = recordType;
                 res.insert(rating);
-                //res.emplace_back(rating);
             }
 
             tx.commit();
@@ -78,11 +77,11 @@ namespace rating::repository::postresql
         }
         catch (const pqxx::sql_error& e)
         {
-            std::cerr << e.query() << std::endl;
+            spdlog::error("SQL error: {}, Query:{}", e.what(), e.query());
         }
         catch(const std::exception& e)
         {
-            std::cerr << e.what() << '\n';
+            spdlog::error("Error: {}", e.what());
         }
     }
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "rating/model/rating.h"
-#include "rating/repository/IRepository.h"
+#include "rating/repository/repository.h"
 #include "common/expected.h"
 
 #include <jthread.hpp>

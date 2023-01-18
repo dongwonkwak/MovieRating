@@ -1,6 +1,6 @@
 #pragma once
 
-#include "rating/repository/IRepository.h"
+#include "rating/repository/repository.h"
 #include <pqxx/pqxx>
 
 #include <memory>

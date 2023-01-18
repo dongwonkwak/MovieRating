@@ -1,7 +1,7 @@
 #include "test_application.h"
 
 #include "discovery/consul.h"
-#include "metadata/repository/repository.h"
+#include "metadata/repository/memory/memory.h"
 #include "metadata/controller/controller.h"
 
 std::shared_ptr<Hypodermic::Container> TestApplication::operator()()
@@ -21,7 +21,7 @@ TestApplication::TestApplication()
     consul->Register(serviceId, serviceName, port);
 
     builder_.registerInstanceFactory([](Hypodermic::ComponentContext& context) {
-        auto repository = std::make_shared<metadata::repository::Repository>();
+        auto repository = std::make_shared<metadata::repository::memory::Repository>();
         return std::make_shared<metadata::controller::Controller>(repository);
     });
 

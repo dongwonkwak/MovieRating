@@ -1,6 +1,6 @@
-#include "metadata/repository/repository.h"
+#include "metadata/repository/memory/memory.h"
 
-namespace metadata::repository
+namespace metadata::repository::memory
 {
     common::expected<model::Metadata> Repository::Get(std::string_view id)
     {

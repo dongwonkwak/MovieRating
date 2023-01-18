@@ -1,5 +1,9 @@
 application:
   name: metadata
+  datasource:
+    url: localhost:5432/movie_db
+    user: postgres
+    password: postgres
   cloud:
     consul:
       host: localhost

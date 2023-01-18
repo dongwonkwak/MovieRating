@@ -57,11 +57,14 @@ namespace rating::controller
                 spdlog::info("[Controller::doIngestion] got event");
                 for (const auto& event : events)
                 {
-                    model::Rating rating;
-                    rating.userId = event.userId;
-                    rating.ratingValue = event.value;
-                    rating.recordId = event.recordId;
-                    Put(event.recordId, event.recordType, rating);
+                    if (event.eventType == model::RatingEventTypePut)
+                    {
+                        model::Rating rating;
+                        rating.userId = event.userId;
+                        rating.ratingValue = event.value;
+                        rating.recordId = event.recordId;
+                        Put(event.recordId, event.recordType, rating);
+                    }
                 }
             }
 

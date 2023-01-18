@@ -7,7 +7,8 @@ project(${project_name} LANGUAGES CXX)
 add_library(${project_name}-lib 
     application.cpp
     controller/controller.cpp
-    repository/repository.cpp
+    repository/memory/memory.cpp
+    repository/postgresql/postgresql.cpp
     service/http/metadata_service.cpp
     service/grpc/metadata_service.cpp
 )
@@ -16,6 +17,7 @@ find_package(cppcoro CONFIG REQUIRED)
 find_package(cpprestsdk CONFIG REQUIRED)
 find_package(Boost 1.81.0 COMPONENTS program_options)
 find_package(spdlog CONFIG REQUIRED)
+find_package(libpqxx CONFIG REQUIRED)
 find_path(HYPODERMIC_INCLUDE_DIRS "Hypodermic/ActivatedRegistrationInfo.h")
 
 target_link_libraries(${project_name}-lib PUBLIC 
@@ -23,6 +25,7 @@ target_link_libraries(${project_name}-lib PUBLIC
     config
     spdlog::spdlog
     ${Boost_LIBRARIES}
+    libpqxx::pqxx
     discovery
     cppcoro
     proto-object

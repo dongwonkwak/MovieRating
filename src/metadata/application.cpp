@@ -2,7 +2,7 @@
 #include <spdlog/spdlog.h>
 
 #include "metadata/application.h"
-#include "metadata/repository/repository.h"
+#include "metadata/repository/postgresql/postgresql.h"
 #include "metadata/controller/controller.h"
 #include "config/config.h"
 #include "discovery/consul.h"
@@ -69,7 +69,8 @@ namespace metadata
     void Application::RegisterController()
     {
         builder_.registerInstanceFactory([](Hypodermic::ComponentContext& context) {
-            auto repository = std::make_shared<repository::Repository>();
+            auto configService = context.resolve<config::Config>();
+            auto repository = std::make_shared<repository::postgresql::Repository>(configService);
             return std::make_shared<controller::Controller>(repository);
         });        
     }

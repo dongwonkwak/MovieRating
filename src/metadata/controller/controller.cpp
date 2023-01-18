@@ -3,7 +3,7 @@
 
 namespace metadata::controller
 {
-Controller::Controller(const std::shared_ptr<metadata::repository::Repository>& repository)
+Controller::Controller(const std::shared_ptr<metadata::repository::IRepository>& repository)
     : repository_{repository}
 {
 
