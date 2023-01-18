@@ -7,7 +7,7 @@ function(Doxygen input output)
   endif()
 
   set(DOXYGEN_GENERATE_HTML YES)
-  set(DOXYGEN_HTML_OUTPUT   ${PROJECT_BINARY_DIR}/${output})
+  set(DOXYGEN_HTML_OUTPUT   ${output})
 
   doxygen_add_docs(doxygen
       ${PROJECT_SOURCE_DIR}/${input}

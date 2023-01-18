@@ -14,4 +14,4 @@ add_subdirectory(src/movie)
 add_subdirectory(src/rating)
 
 include(Doxygen)
-Doxygen(src docs)
+Doxygen(src ${CMAKE_CURRENT_SOURCE_DIR}/docs)
