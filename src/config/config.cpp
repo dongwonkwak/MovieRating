@@ -63,6 +63,7 @@ namespace config
         }
 
         using namespace ranges::views;
+        // .을 기준으로 split한다. split 결과는 vector에 저장된다.
         auto inp = k 
             | split('.')
             | transform([](auto&& rng) {

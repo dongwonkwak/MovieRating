@@ -41,14 +41,18 @@ namespace rating
             std::cerr << "configService is null. terminate program.";
             exit(-1);
         }
+        // get service name
+        auto serviceName = configService->get<std::string>("application.name");
+        auto port = configService->get<ushort>("grpc.server.port");
         auto addr = fmt::format("{}:{}", 
             configService->get<std::string>("grpc.server.host"),
-            configService->get<ushort>("grpc.server.port"));
+            port);
         auto server = app()->resolve<rating::service::grpc::RatingService>();
         auto registry = app()->resolve<discovery::Registry>();
         cppcoro::static_thread_pool thread_pool;
 
-        auto serviceId = registry->GetServiceID();
+        auto serviceId = discovery::GenerateServiceID(serviceName);
+        registry->Register(serviceId, serviceName, std::to_string(port));
 
         auto health_check = [&]() -> cppcoro::task<>
         {

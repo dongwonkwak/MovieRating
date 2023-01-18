@@ -47,16 +47,21 @@ namespace movie
             std::cout << "configService is null. terminate program.";
             exit(-1);
         }
+        // get service name
+        auto serviceName = configService->get<std::string>("application.name");
+        auto port = configService->get<ushort>("grpc.server.port");
         auto addr = fmt::format("{}:{}", 
             configService->get<std::string>("grpc.server.host"),
-            configService->get<ushort>("grpc.server.port"));
-        //spdlog::info(fmt::format("Movie Service Listening for requests at: {}", addr));
+            port);
+        // create controller
         auto controller = app()->resolve<controller::Controller>();
+        // create grpc service
         movie::service::grpc::MovieService server(controller, addr);
         auto registry = app()->resolve<discovery::Registry>();
         cppcoro::static_thread_pool thread_pool;
 
-        auto serviceId = registry->GetServiceID();
+        auto serviceId = discovery::GenerateServiceID(serviceName);
+        registry->Register(serviceId, serviceName, std::to_string(port));
 
         auto health_check = [&]() -> cppcoro::task<>
         {

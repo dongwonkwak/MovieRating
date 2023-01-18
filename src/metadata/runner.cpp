@@ -31,7 +31,7 @@ namespace metadata
 
         if (!vm.count("config-file"))
         {
-            std::cerr << "requires config-file option. terminate program.\n";
+            spdlog::error("requires config-file option. terminate program.");
             exit(-1);
         }
 
@@ -39,19 +39,26 @@ namespace metadata
         auto configService = app()->resolve<config::Config>();
         if (configService == nullptr)
         {
-            std::cerr << "configService is null. terminate program.\n";
+            spdlog::error("configService is null. terminate program.");
             exit(-1);
         }
+        // get service name
+        auto serviceName = configService->get<std::string>("application.name");
+        // get service address(grpc)
+        auto port = configService->get<ushort>("grpc.server.port");
         auto addr = fmt::format("{}:{}", 
             configService->get<std::string>("grpc.server.host"),
-            configService->get<ushort>("grpc.server.port"));
+            port);
+        // create controller
         auto controller = app()->resolve<controller::Controller>();
+        // create consul registry
         auto registry = app()->resolve<discovery::Registry>();
         service::grpc::MetadataService server(controller, addr);
 
         cppcoro::static_thread_pool thread_pool;
 
-        auto serviceId = registry->GetServiceID();
+        auto serviceId = discovery::GenerateServiceID(serviceName);
+        registry->Register(serviceId, serviceName, std::to_string(port));
 
         auto health_check = [&]() -> cppcoro::task<>
         {

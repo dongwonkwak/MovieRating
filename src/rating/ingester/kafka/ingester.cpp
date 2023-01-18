@@ -23,7 +23,7 @@ namespace rating::ingester::kafka
             spdlog::debug("input: {}", line);
             auto obj = web::json::value::parse(line);
             spdlog::debug("parsed json: {}", obj.serialize().c_str());
-
+            // json array 형식으로 데이터가 오지 않았다. (한개의 데이터)
             if (!obj.is_array())
             {
                 spdlog::debug("not array");

@@ -19,7 +19,7 @@ namespace movie::controller
         using namespace common;
         model::MovieDetails details;
         spdlog::debug("Controller got request - id: {}", id);
-
+        
         return metadataGateway_->Get(id)
             .and_then([&](auto metadata) {
                 details.metadata = metadata;

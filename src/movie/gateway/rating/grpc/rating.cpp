@@ -85,7 +85,7 @@ namespace movie::gateway::rating::grpc
         {
             return common::unexpected{"record ID or record type is empty"};
         }
-
+        // rating 서비스를 서비스 레지스트리에서 찾는다.
         return grpcutil::ServiceConnection("rating", registry_)
                 .map([=](auto conn) {
                     RatingServiceClient client(conn);
@@ -105,7 +105,7 @@ namespace movie::gateway::rating::grpc
             spdlog::error("[RatingGateway::PutRating]record ID or record type is empty");
             return;
         }
-
+        // rating 서비스를 서비스 레지스트리에서 찾는다.
         grpcutil::ServiceConnection("rating", registry_)
             .map([=](auto conn) {
                 RatingServiceClient client(conn);

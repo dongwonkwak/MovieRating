@@ -42,7 +42,9 @@ namespace metadata
 
     Application::Application(const boost::program_options::variables_map& vm)
     {
+        // read config file
         std::string configFile = vm["config-file"].as<std::string>();
+        // create config object
         auto configService = config::Config::Create(configFile);
         InitializeLogger(configService);
 

@@ -10,6 +10,7 @@ using movie::GetAggregatedRatingResponse;
 using movie::PutRatingRequest;
 using movie::PutRatingResponse;
 
+#include <condition_variable_any2.hpp>
 
 class RatingServiceImpl final : public movie::RatingService::Service
 {
@@ -40,6 +41,7 @@ private:
                 "not found");
         }
         double sum = 0.0;
+        // rating 평균을 계산한다.
         for (const auto& e : v.value())
         {
             sum += e.ratingValue;
@@ -108,17 +110,24 @@ namespace rating::service::grpc
         builder.RegisterService(&service);
 
         server_ = std::unique_ptr<Server>(builder.BuildAndStart());
+        thread_ = std::jthread([this](std::stop_token token){
+            std::mutex mutex;
+            std::unique_lock lock(mutex);
+            std::condition_variable_any2().wait(lock, token,
+                        [] { return false; });
+            server_->Shutdown();
+        });
 
         server_->Wait();
     }
 
     void RatingService::stop()
     {
-        if (server_)
+        spdlog::info("[RatingService] stop service");
+        thread_.request_stop();
+        if (thread_.joinable())
         {
-            spdlog::info("[RatingService] stop service");
-            server_->Shutdown();
-            server_.release();
+            thread_.join();
         }
     }
 }

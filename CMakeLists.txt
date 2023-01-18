@@ -12,3 +12,6 @@ add_subdirectory(src/discovery)
 add_subdirectory(src/metadata)
 add_subdirectory(src/movie)
 add_subdirectory(src/rating)
+
+include(Doxygen)
+Doxygen(src docs)

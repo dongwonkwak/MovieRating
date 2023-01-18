@@ -9,3 +9,5 @@ find_package(yaml-cpp CONFIG REQUIRED)
 target_link_libraries(config PRIVATE
     yaml-cpp
 )
+
+target_compile_options(config PUBLIC -Wall -Werror)

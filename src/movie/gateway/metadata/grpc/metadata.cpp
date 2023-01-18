@@ -47,13 +47,13 @@ private:
 
 namespace movie::gateway::metadata::grpc
 {
-    MetadataGateway::MetadataGateway(const std::shared_ptr<discovery::Registry>& registry) noexcept
+    MetadataGateway::MetadataGateway(const std::shared_ptr<discovery::Registry>& registry)
        : registry_(registry)
     {
 
     }
 
-    MetadataGateway::~MetadataGateway() noexcept
+    MetadataGateway::~MetadataGateway()
     {
 
     }
@@ -65,7 +65,7 @@ namespace movie::gateway::metadata::grpc
         {
             return common::unexpected{"id is empty"};
         }
-
+        // 서비스 디스커버리
         return grpcutil::ServiceConnection("metadata", registry_)
             .and_then([=](auto conn) {
                 MetadataServiceClient client(conn);

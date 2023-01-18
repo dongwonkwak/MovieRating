@@ -9,7 +9,7 @@ using movie::GetMetadataResponse;
 using movie::PutMetadataRequest;
 using movie::PutMetadataResponse;
 
-#include <iostream>
+#include <condition_variable_any2.hpp>
 
 class MetadataServiceImpl final : public movie::MetadataService::Service
 {
@@ -86,17 +86,24 @@ namespace metadata::service::grpc
         builder.RegisterService(&service);
 
         server_ = std::unique_ptr<Server>(builder.BuildAndStart());
+        thread_ = std::jthread([this](std::stop_token token){
+            std::mutex mutex;
+            std::unique_lock lock(mutex);
+            std::condition_variable_any2().wait(lock, token,
+                        [] { return false; });
+            server_->Shutdown();
+        });
 
         server_->Wait();
     }
 
     void MetadataService::stop()
     {
-        if (server_)
+        spdlog::info("[Metadata Service] stop service");
+        thread_.request_stop();
+        if (thread_.joinable())
         {
-            spdlog::info("Metadata GrpcService is stopped...");
-            server_->Shutdown();
-            server_.release();
+            thread_.join();
         }
     }
 }

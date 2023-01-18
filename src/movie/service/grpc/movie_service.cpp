@@ -74,7 +74,7 @@ namespace movie::service::grpc
             std::mutex mutex;
             std::unique_lock lock(mutex);
             std::condition_variable_any2().wait(lock, token,
-                        [&token] { return false; });
+                        [] { return false; });
             server_->Shutdown();
         });
 

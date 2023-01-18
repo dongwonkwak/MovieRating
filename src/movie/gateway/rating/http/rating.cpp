@@ -34,7 +34,7 @@ namespace movie::gateway::rating::http
                 .then([](http_response resp) { return resp.extract_string(); })
                 .then([](std::string body) {
                     double result = stod(body);
-                    std::cout << "!! result: " << result << std::endl;
+                    spdlog::info("result: {}", result);
                     return result;
                 });
                 

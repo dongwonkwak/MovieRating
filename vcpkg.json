@@ -18,6 +18,7 @@
         "libpqxx",
         "boost-program-options",
         "yaml-cpp",
-        "hypodermic"
+        "hypodermic",
+        "boost-multi-index"
     ]
 }

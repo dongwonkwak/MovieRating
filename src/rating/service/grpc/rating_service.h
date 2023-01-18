@@ -9,6 +9,8 @@ using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
 
+#include <jthread.hpp>
+
 #include <memory>
 #include <string>
 
@@ -29,5 +31,6 @@ namespace rating::service::grpc
     private:
         std::shared_ptr<rating::controller::Controller> controller_;
         std::unique_ptr<Server> server_;
+        std::jthread thread_;
     };
 }

@@ -16,33 +16,29 @@ namespace discovery
     ConsulRegistry::ConsulRegistry(const std::shared_ptr<config::Config>& config)
     {
         auto serviceName = config->get<std::string>("application.name");
-        auto serviceId = discovery::GenerateServiceID(serviceName);
         std::string consulAddr = "http://localhost:8500";
-        ushort hostPort = 8082;
 
         try
         {
             consulAddr = fmt::format("http://{}:{}", 
                 config->get<std::string>("application.cloud.consul.host"),
                 config->get<ushort>("application.cloud.consul.port"));
-            hostPort = config->get<ushort>("grpc.server.port");
         }
         catch (const std::exception& e)
         {
             spdlog::error(e.what());
         }
         consul_ = std::make_unique<ppconsul::Consul>(consulAddr);
-        health_ = std::make_unique<ppconsul::health::Health>(*consul_);
         agent_ = std::make_unique<ppconsul::agent::Agent>(*consul_);
+        health_ = std::make_unique<ppconsul::health::Health>(*consul_);
+        
         ttl_ = 5;
-
-        this->Register(serviceId, serviceName, std::to_string(hostPort));
     }
 
     ConsulRegistry::ConsulRegistry(const std::string& endpoint, size_t ttl)
         : consul_(new ppconsul::Consul(endpoint))
-        , health_(new ppconsul::health::Health(*consul_))
         , agent_(new ppconsul::agent::Agent(*consul_))
+        , health_(new ppconsul::health::Health(*consul_))
         , ttl_(ttl)
     {
         if (ttl_ == 0)
@@ -53,7 +49,6 @@ namespace discovery
 
     ConsulRegistry::~ConsulRegistry()
     {
-        Deregister(serviceId_);
     }
 
     void ConsulRegistry::Register(
@@ -61,7 +56,6 @@ namespace discovery
         const std::string &serviceName, 
         const std::string &hostPort)
     {
-        serviceId_ = serviceId;
 
         agent_->registerService(
             kw::name = serviceName,
@@ -86,9 +80,10 @@ namespace discovery
         using namespace ranges;
         auto services = agent_->services();
         auto agents = agent_->checks();
-
+        // service name에 해당하는 서비스 주소를 필러링한다.
         auto rng = agents | ranges::views::values
             | views::filter([&serviceName](auto agent) { 
+                // 이름이 같고 서비스가 살아 있는가?
                 return (agent.serviceName == serviceName && agent.status == ppconsul::CheckStatus::Passing);
             })
             | views::transform([&services](auto info) {
@@ -105,10 +100,5 @@ namespace discovery
             return common::unexpected{fmt::format("can't find [{}] service.", serviceName)};
         }
         return ret;
-    }
-
-    std::string ConsulRegistry::GetServiceID() const
-    {
-        return serviceId_;
     }
 }

@@ -36,13 +36,23 @@ private:
 
 TEST(METAServiceTest, Run)
 {
+    auto serviceName = "metadata";
     TestApplication app;
     auto controller = app()->resolve<metadata::controller::Controller>();
-    auto service = std::make_shared<metadata::service::grpc::MetadataService>(controller, METADATA_GRPC_ENDPOINT);
+    std::string endpoint(METADATA_GRPC_ENDPOINT);
+    auto service = std::make_shared<metadata::service::grpc::MetadataService>(controller, endpoint);
     ServiceRunner runner(service);
 
     auto registry = app()->resolve<discovery::Registry>();
-    auto serviceId = registry->GetServiceID();
+    auto serviceId = discovery::GenerateServiceID(serviceName);
+    auto pos = endpoint.find(':');
+    if (pos == std::string::npos)
+    {
+        std::cerr << "can't find port\n";
+        return;
+    }
+    auto port = endpoint.substr(pos + 1, endpoint.size());
+    registry->Register(serviceId, serviceName, port);
     registry->ReportHealthyState(serviceId);
 
     auto client = std::make_shared<movie::gateway::metadata::grpc::MetadataGateway>(registry);

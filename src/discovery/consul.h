@@ -24,7 +24,6 @@ namespace discovery
         void Deregister(const std::string& serviceId) override;
         void ReportHealthyState(const std::string& serviceId) override;
         common::expected<std::vector<std::string>> ServiceAddress(const std::string& serviceName) override;
-        std::string GetServiceID() const override;
     private:
         ConsulRegistry(const std::string& endpoint, size_t ttl);
     private:
@@ -32,6 +31,5 @@ namespace discovery
         std::unique_ptr<ppconsul::agent::Agent> agent_;
         std::unique_ptr<ppconsul::health::Health> health_;
         size_t ttl_;
-        std::string serviceId_;
     };
 }

@@ -16,3 +16,5 @@ target_link_libraries(discovery PRIVATE
     common
     config
     ppconsul)
+
+target_compile_options(discovery PUBLIC -Wall -Werror)

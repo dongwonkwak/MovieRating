@@ -87,7 +87,7 @@ namespace rating::model
     {
         auto res = web::json::value::array(rating->size());
         int index = 0;
-        for (const auto r : rating.value())
+        for (const auto& r : rating.value())
         {
             res[index++] = r->AsJSON();
         }
